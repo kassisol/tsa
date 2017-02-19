@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newHcaCommand() *cobra.Command {
+func newCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tsa",
 		Short: "TSA is a CA server",
@@ -50,7 +50,7 @@ func main() {
 		utils.Exit(fmt.Errorf("You must be root to run that command"))
 	}
 
-	cmd := newHcaCommand()
+	cmd := newCommand()
 	if err := cmd.Execute(); err != nil {
 		utils.Exit(err)
 	}
