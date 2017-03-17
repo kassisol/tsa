@@ -25,34 +25,34 @@ import (
 )
 
 var (
-	serverDuration string
-	serverCountry  string
-	serverState    string
-	serverLocality string
-	serverOrg      string
-	serverOrgUnit  string
-	serverEmail    string
-	serverAPIFQDN  string
-	serverAPIBind  string
-	serverAPIPort  string
+	serverDuration         string
+	serverCountry          string
+	serverState            string
+	serverLocality         string
+	serverOrg              string
+	serverOrgUnit          string
+	serverEmail            string
+	serverAPIFQDN          string
+	serverAPIBind          string
+	serverAPIPort          string
 	serverEngineCertCreate bool
 )
 
 type configCommon struct {
-	Country string
-	State string
+	Country  string
+	State    string
 	Locality string
-	O string
-	OU string
-	Email string
+	O        string
+	OU       string
+	Email    string
 }
 
 type configCustom struct {
-	KeyFile string
-	CrtFile string
-	FQDN string
-	Port string
-	IP []string
+	KeyFile  string
+	CrtFile  string
+	FQDN     string
+	Port     string
+	IP       []string
 	Duration int
 }
 
@@ -278,12 +278,12 @@ func runInit(cmd *cobra.Command, args []string) {
 	ca.CreateCRLFile(command.CaCrlFile)
 
 	ccommon := configCommon{
-		Country: country,
-		State: state,
+		Country:  country,
+		State:    state,
 		Locality: locality,
-		O: o,
-		OU: ou,
-		Email: email,
+		O:        o,
+		OU:       ou,
+		Email:    email,
 	}
 
 	// Create certificate for API
@@ -293,8 +293,8 @@ func runInit(cmd *cobra.Command, args []string) {
 
 	ips := []string{}
 
-        interfaces := ip.New()
-        interfaces.Get()
+	interfaces := ip.New()
+	interfaces.Get()
 	interfaces.IgnoreIntf([]string{"lo"})
 
 	for _, intf := range interfaces {
@@ -304,11 +304,11 @@ func runInit(cmd *cobra.Command, args []string) {
 	}
 
 	apiccustom := configCustom{
-		KeyFile: command.ApiKeyFile,
-		CrtFile: command.ApiCrtFile,
-		FQDN: apifqdn,
-		Port: apiport,
-		IP: ips,
+		KeyFile:  command.ApiKeyFile,
+		CrtFile:  command.ApiCrtFile,
+		FQDN:     apifqdn,
+		Port:     apiport,
+		IP:       ips,
 		Duration: 60,
 	}
 
