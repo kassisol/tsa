@@ -103,10 +103,16 @@
 			"revisionTime": "2017-02-03T15:06:23Z"
 		},
 		{
-			"checksumSHA1": "FqZ6T6IFd7rcH1fDsFnBE1GvUx8=",
+			"checksumSHA1": "5PTXym8qtV0VAjFAl2wWxz6J9mE=",
 			"path": "github.com/juliengk/go-utils/filedir",
-			"revision": "ea868d6f9306e100d6c43749f3a7dfd2cf823ea0",
-			"revisionTime": "2017-02-03T15:06:23Z"
+			"revision": "066bd06ec6dcd9f773993273f04463d7ac2774e6",
+			"revisionTime": "2017-03-17T14:03:18Z"
+		},
+		{
+			"checksumSHA1": "qt4iptV5cFKUkM/+I94ieme7AIM=",
+			"path": "github.com/juliengk/go-utils/ip",
+			"revision": "066bd06ec6dcd9f773993273f04463d7ac2774e6",
+			"revisionTime": "2017-03-17T14:03:18Z"
 		},
 		{
 			"checksumSHA1": "Tn9gcPRVOucI0hb+/ykreDHamb8=",

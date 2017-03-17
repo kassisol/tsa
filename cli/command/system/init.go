@@ -3,6 +3,7 @@ package system
 import (
 	"crypto/md5"
 	"fmt"
+	"net"
 	"os"
 	"path"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"github.com/juliengk/go-cert/helpers"
 	"github.com/juliengk/go-cert/pkix"
 	"github.com/juliengk/go-utils/filedir"
+	"github.com/juliengk/go-utils/ip"
 	"github.com/juliengk/go-utils/random"
 	"github.com/juliengk/go-utils/readinput"
 	"github.com/juliengk/go-utils/validation"
@@ -33,7 +35,31 @@ var (
 	serverAPIFQDN  string
 	serverAPIBind  string
 	serverAPIPort  string
+	serverEngineCertCreate bool
 )
+
+type configCommon struct {
+	Country string
+	State string
+	Locality string
+	O string
+	OU string
+	Email string
+}
+
+type configCustom struct {
+	KeyFile string
+	CrtFile string
+	FQDN string
+	Port string
+	IP []string
+	Duration int
+}
+
+type configCert struct {
+	configCommon
+	configCustom
+}
 
 func NewInitCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -55,6 +81,8 @@ func NewInitCommand() *cobra.Command {
 	flags.StringVarP(&serverAPIFQDN, "api-fqdn", "", "", "API FQDN")
 	flags.StringVarP(&serverAPIBind, "api-bind", "", "0.0.0.0", "API Bind Interface")
 	flags.StringVarP(&serverAPIPort, "api-port", "", "443", "API Port")
+
+	flags.BoolVarP(&serverEngineCertCreate, "engine", "", false, "Create Docker Engine Certificates")
 
 	return cmd
 }
@@ -82,8 +110,7 @@ func runInit(cmd *cobra.Command, args []string) {
 		os.Exit(0)
 	}
 
-	err := filedir.CreateDirIfNotExist(command.AppPath, 0700)
-	if err != nil {
+	if err := filedir.CreateDirIfNotExist(command.AppPath, 0700); err != nil {
 		log.Fatal(err)
 	}
 
@@ -133,6 +160,13 @@ func runInit(cmd *cobra.Command, args []string) {
 
 	if len(serverAPIFQDN) <= 0 {
 		apifqdn = readinput.ReadInput("API FQDN")
+		if len(apifqdn) <= 0 {
+			af, err := os.Hostname()
+			if err != nil {
+				log.Fatal(err)
+			}
+			apifqdn = af
+		}
 	} else {
 		apifqdn = serverAPIFQDN
 	}
@@ -243,110 +277,167 @@ func runInit(cmd *cobra.Command, args []string) {
 
 	ca.CreateCRLFile(command.CaCrlFile)
 
+	ccommon := configCommon{
+		Country: country,
+		State: state,
+		Locality: locality,
+		O: o,
+		OU: ou,
+		Email: email,
+	}
+
 	// Create certificate for API
-	apiDuration := 12
-
-	err = filedir.CreateDirIfNotExist(command.ApiCertsDir, 0750)
-	if err != nil {
+	if err = filedir.CreateDirIfNotExist(command.ApiCertsDir, 0750); err != nil {
 		log.Fatal(err)
 	}
 
+	ips := []string{}
+
+        interfaces := ip.New()
+        interfaces.Get()
+	interfaces.IgnoreIntf([]string{"lo"})
+
+	for _, intf := range interfaces {
+		if len(intf.V4) > 0 {
+			ips = append(ips, intf.V4[0])
+		}
+	}
+
+	apiccustom := configCustom{
+		KeyFile: command.ApiKeyFile,
+		CrtFile: command.ApiCrtFile,
+		FQDN: apifqdn,
+		Port: apiport,
+		IP: ips,
+		Duration: 60,
+	}
+
+	apiconfig := configCert{
+		ccommon,
+		apiccustom,
+	}
+
+	if err = createCert(newCA, apiconfig); err != nil {
+		log.Fatal(err)
+	}
+
+	// Create certificate for Docker Engine
+	if serverEngineCertCreate {
+		if err = os.MkdirAll(command.EngineCertsDir, 0755); err != nil {
+			log.Fatal(err)
+		}
+
+		if err = filedir.CopyFile(command.ApiKeyFile, command.EngineKeyFile); err != nil {
+			log.Fatal(err)
+		}
+		if err = filedir.CopyFile(command.ApiCrtFile, command.EngineCrtFile); err != nil {
+			log.Fatal(err)
+		}
+		if err = filedir.CopyFile(command.CaCrtFile, command.EngineCaFile); err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
+func createCert(newCA *ca.CA, config configCert) error {
 	// Key pair
-	apiKey, err := pkix.NewKey(4096)
+	key, err := pkix.NewKey(4096)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	apiKeyBytes, err := apiKey.ToPEM()
+	keyBytes, err := key.ToPEM()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	err = pkix.ToPEMFile(command.ApiKeyFile, apiKeyBytes, 0400)
-	if err != nil {
-		log.Fatal(err)
+	if err = pkix.ToPEMFile(config.KeyFile, keyBytes, 0400); err != nil {
+		return err
 	}
 
 	// CSR
-	apiSubject := pkix.NewSubject(country, state, locality, o, ou, apifqdn)
+	subject := pkix.NewSubject(config.Country, config.State, config.Locality, config.O, config.OU, config.FQDN)
 
-	apiNDN := pkix.NewDNSNames()
+	ndn := pkix.NewDNSNames()
 
-	apiNE := pkix.NewEmails()
-	apiNE.AddEmail(email)
+	ne := pkix.NewEmails()
+	ne.AddEmail(config.Email)
 
-	apiIP := pkix.NewIPs()
+	ips := pkix.NewIPs()
 
-	apiAltnames := pkix.NewSubjectAltNames(apiNDN, apiNE, apiIP)
+	if len(config.IP) > 0 {
+		for _, ip := range config.IP {
+			ips.AddIP(net.ParseIP(ip))
+		}
+	}
 
-	apiCsr, err := pkix.NewCertificateRequest(apiKey, apiSubject, apiAltnames)
+	altnames := pkix.NewSubjectAltNames(ndn, ne, ips)
+
+	csr, err := pkix.NewCertificateRequest(key, subject, altnames)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// CA
-	/*newCA, err := ca.NewCA(command.AppPath)
+	pubKey := csr.GetPublicKey()
+	subjectAltNames := csr.GetSubjectAltNames()
+	date := ca.CreateDate(config.Duration)
+	sn, err := newCA.IncrementSerialNumber()
 	if err != nil {
-		log.Fatal(err)
-	}*/
-
-	apiPubKey := apiCsr.GetPublicKey()
-	apiSubjectAltNames := apiCsr.GetSubjectAltNames()
-	apiDate := ca.CreateDate(apiDuration)
-	apiSN, err := newCA.IncrementSerialNumber()
-	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	apiTemplate, err := ca.CreateTemplate(false, apiSubject, apiSubjectAltNames, apiDate, apiSN, "")
+	crlUrl := fmt.Sprintf("https://%s:%s/crl/CRL.crl", config.FQDN, config.Port)
+
+	template, err := ca.CreateTemplate(false, subject, subjectAltNames, date, sn, crlUrl)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	apiDerBytes, err := ca.IssueCertificate(apiTemplate, newCA.Certificate.Crt, apiPubKey, newCA.Key.Private)
+	derBytes, err := ca.IssueCertificate(template, newCA.Certificate.Crt, pubKey, newCA.Key.Private)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// create certificate PEM file
-	apiCertificate, err := pkix.NewCertificateFromDER(apiDerBytes)
+	certificate, err := pkix.NewCertificateFromDER(derBytes)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	apiCrtBytes, err := apiCertificate.ToPEM()
+	crtBytes, err := certificate.ToPEM()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	err = pkix.ToPEMFile(command.ApiCrtFile, apiCrtBytes, 0444)
-	if err != nil {
-		log.Fatal(err)
+	if err = pkix.ToPEMFile(config.CrtFile, crtBytes, 0444); err != nil {
+		return err
 	}
 
 	// create serial number file
-	newCA.WriteSerialNumber(apiSN)
+	newCA.WriteSerialNumber(sn)
 
 	// save information to CA database
 	db, err := database.NewBackend("sqlite", command.CaDir)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer db.End()
 
-	indexExpireDate := ca.DatabaseDateTimeFormat(apiDate.Expire)
-	indexDN := apiCsr.SubjectToString()
+	indexExpireDate := ca.DatabaseDateTimeFormat(date.Expire)
+	indexDN := csr.SubjectToString()
 
 	certName := fmt.Sprintf("%x", md5.Sum([]byte(indexDN)))
 	certNameFile := fmt.Sprintf("%s.crt", certName)
 	certNamePath := path.Join(command.CaCertsDir, certNameFile)
 
-	db.New(apiSN, indexExpireDate, certNameFile, indexDN)
+	db.New(sn, indexExpireDate, certNameFile, indexDN)
 
-	err = pkix.ToPEMFile(certNamePath, apiCrtBytes, 0444)
-	if err != nil {
-		log.Fatal(err)
+	if err = pkix.ToPEMFile(certNamePath, crtBytes, 0444); err != nil {
+		return err
 	}
+
+	return nil
 }
 
 var initDescription = `
