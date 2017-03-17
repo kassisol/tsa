@@ -3,29 +3,29 @@ package client
 import (
 	"fmt"
 	"net/url"
-        "strconv"
+	"strconv"
 	"strings"
 )
 
 func BuildUserAgent(progname, version string) string {
-        return fmt.Sprintf("%s/%s", progname, version)
+	return fmt.Sprintf("%s/%s", progname, version)
 }
 
 func buildUrl(c *Config) string {
-        //return fmt.Sprintf("%s://%s:%s%s?%s", c.Scheme, c.Host, strconv.Itoa(c.Port), c.Path, query.Encode())
-        return fmt.Sprintf("%s://%s:%s%s", c.Scheme, c.Host, strconv.Itoa(c.Port), c.Path)
+	//return fmt.Sprintf("%s://%s:%s%s?%s", c.Scheme, c.Host, strconv.Itoa(c.Port), c.Path, query.Encode())
+	return fmt.Sprintf("%s://%s:%s%s", c.Scheme, c.Host, strconv.Itoa(c.Port), c.Path)
 }
 
 type URL struct {
-	Scheme     string
-	Opaque     string
-	User       *url.Userinfo
-	Host       string
-	Port       int
-	Path       string
-	RawPath    string
-	RawQuery   string
-	Fragment   string
+	Scheme   string
+	Opaque   string
+	User     *url.Userinfo
+	Host     string
+	Port     int
+	Path     string
+	RawPath  string
+	RawQuery string
+	Fragment string
 }
 
 func ParseUrl(rawurl string) (*URL, error) {
@@ -49,14 +49,14 @@ func ParseUrl(rawurl string) (*URL, error) {
 	}
 
 	return &URL{
-		Scheme:     u.Scheme,
-		Opaque:     u.Opaque,
-		User:       u.User,
-		Host:       host,
-		Port:       port,
-		Path:       u.Path,
-		RawPath:    u.RawPath,
-		RawQuery:   u.RawQuery,
-		Fragment:   u.Fragment,
+		Scheme:   u.Scheme,
+		Opaque:   u.Opaque,
+		User:     u.User,
+		Host:     host,
+		Port:     port,
+		Path:     u.Path,
+		RawPath:  u.RawPath,
+		RawQuery: u.RawQuery,
+		Fragment: u.Fragment,
 	}, nil
 }

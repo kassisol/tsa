@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/juliengk/stack/jsonapi"
 	"github.com/kassisol/tsa/errors"
@@ -14,6 +15,9 @@ func AuthzHandle(c echo.Context) error {
 	username := c.Get("username").(string)
 	admin := c.Get("admin").(bool)
 
+	qTtl := c.QueryParam("ttl")
+	ttl, _ := strconv.Atoi(qTtl)
+
 	// Create the Claims
 	jwk, err := token.GetSigningKey()
 	if err != nil {
@@ -23,7 +27,7 @@ func AuthzHandle(c echo.Context) error {
 		return api.JSON(c, http.StatusInternalServerError, r)
 	}
 
-	ss, err := token.New(jwk, username, admin)
+	ss, err := token.New(jwk, username, admin, ttl)
 	if err != nil {
 		e := errors.New(errors.DatabaseError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)

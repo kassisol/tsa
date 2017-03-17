@@ -16,25 +16,26 @@ type MyCustomClaims struct {
 	jwt.StandardClaims
 }
 
-func New(jwk []byte, audience string, admin bool) (string, error) {
+func New(jwk []byte, audience string, admin bool, ttl int) (string, error) {
 	now := time.Now()
+
+	expireMinutes := 5
+	if admin {
+		expireMinutes = 1440
+		if ttl > 0 {
+			expireMinutes = ttl
+		}
+	}
 
 	claims := MyCustomClaims{
 		admin,
 		jwt.StandardClaims{
 			Audience:  audience,
-			ExpiresAt: now.Add(time.Minute * 5).Unix(),
+			ExpiresAt: now.Add(time.Minute * time.Duration(expireMinutes)).Unix(),
 			IssuedAt:  now.Unix(),
 			Issuer:    "harbormaster",
 		},
 	}
-	/*claims := jwt.MapClaims{
-		"aud": audience,
-		"exp": now.Add(time.Minute * 5).Unix(),
-		"iat": now.Unix(),
-		"iss": "harbormaster",
-		"admin": admin,
-	}*/
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	ss, err := token.SignedString(jwk)

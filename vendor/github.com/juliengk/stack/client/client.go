@@ -1,20 +1,20 @@
 package client
 
 import (
-        "crypto/tls"
+	"crypto/tls"
 	"io"
-        "io/ioutil"
-        "net/http"
-        "time"
+	"io/ioutil"
+	"net/http"
+	"time"
 )
 
 type Config struct {
-//        UserAgent       string
-	Scheme		string
-	Host		string
-	Port		int
-	Path		string
-        Timeout         int
+	//        UserAgent       string
+	Scheme  string
+	Host    string
+	Port    int
+	Path    string
+	Timeout int
 }
 
 type BasicAuth struct {
@@ -23,17 +23,18 @@ type BasicAuth struct {
 }
 
 type Request struct {
-        Url             string
-        Headers         map[string]string
-	BasicAuth	BasicAuth
-        Timeout         int
+	Url       string
+	Headers   map[string]string
+	BasicAuth BasicAuth
+	Values    map[string][]string
+	Timeout   int
 }
 
 type Result struct {
-        StatusCode      int
-        Header          http.Header
-        Body            []byte
-        Error           error
+	StatusCode int
+	Header     http.Header
+	Body       []byte
+	Error      error
 }
 
 var EmptyHeader = http.Header{}
@@ -48,12 +49,12 @@ var methods = []string{
 }
 
 func New(c *Config) (Request, error) {
-        txtUrl := buildUrl(c)
+	txtUrl := buildUrl(c)
 
-        return Request{
-                Url: txtUrl,
-                Timeout: c.Timeout,
-        }, nil
+	return Request{
+		Url:     txtUrl,
+		Timeout: c.Timeout,
+	}, nil
 }
 
 func (r *Request) HeaderAdd(name, value string) {
@@ -75,22 +76,34 @@ func (r *Request) SetBasicAuth(username, password string) {
 	r.BasicAuth = ba
 }
 
+func (r *Request) ValueAdd(name, value string) {
+	if len(r.Values) == 0 {
+		r.Values = make(map[string][]string)
+	}
+
+	if _, ok := r.Values[name]; ok {
+		r.Values[name] = append(r.Values[name], value)
+	} else {
+		r.Values[name] = []string{value}
+	}
+}
+
 func (r *Request) Do(method string, body io.Reader) Result {
-        tlsConfig := &tls.Config{InsecureSkipVerify: true}
+	tlsConfig := &tls.Config{InsecureSkipVerify: true}
 
-        transport := &http.Transport{TLSClientConfig: tlsConfig}
+	transport := &http.Transport{TLSClientConfig: tlsConfig}
 
-        timeout := time.Second * time.Duration(r.Timeout)
+	timeout := time.Second * time.Duration(r.Timeout)
 
-        clnt := &http.Client{
-                Transport: transport,
-                Timeout: timeout,
-        }
+	clnt := &http.Client{
+		Transport: transport,
+		Timeout:   timeout,
+	}
 
 	req, err := http.NewRequest(method, r.Url, body)
-        if err != nil {
-                return Result{500, EmptyHeader, nil, err}
-        }
+	if err != nil {
+		return Result{500, EmptyHeader, nil, err}
+	}
 
 	r.HeaderAdd("Content-Type", "application/json")
 
@@ -104,18 +117,28 @@ func (r *Request) Do(method string, body io.Reader) Result {
 		req.SetBasicAuth(r.BasicAuth.Username, r.BasicAuth.Password)
 	}
 
-        resp, err := clnt.Do(req)
-        if err != nil {
-                return Result{resp.StatusCode, req.Header, nil, err}
-        }
-        defer resp.Body.Close()
+	if len(r.Values) > 0 {
+		q := req.URL.Query()
 
-        b, err := ioutil.ReadAll(resp.Body)
-        if err != nil {
-                return Result{resp.StatusCode, req.Header, nil, err}
-        }
+		for k, values := range r.Values {
+			for _, v := range values {
+				q.Add(k, v)
+			}
+		}
+	}
 
-        return Result{resp.StatusCode, req.Header, b, nil}
+	resp, err := clnt.Do(req)
+	if err != nil {
+		return Result{resp.StatusCode, req.Header, nil, err}
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return Result{resp.StatusCode, req.Header, nil, err}
+	}
+
+	return Result{resp.StatusCode, req.Header, b, nil}
 }
 
 func (r *Request) Get() Result {
