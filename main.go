@@ -59,11 +59,11 @@ func main() {
 var usageTemplate = `{{ .Short | trim }}
 
 Usage:{{ if .Runnable }}
-  {{ if .HasAvailableFlags }}{{ appendIfNotPresent .UseLine "[flags]" }}{{ else }}{{ .UseLine }}{{ end }}{{ end }}{{ if .HasAvailableSubCommands }}{{ .CommandPath }} [command]{{ end }}{{ if gt .Aliases 0 }}
+  {{ if .HasAvailableFlags }}{{ appendIfNotPresent .UseLine "[flags]" }}{{ else }}{{ .UseLine }}{{ end }}{{ end }}{{ if .HasAvailableSubCommands }}
+  {{ .CommandPath }} [command]{{ end }}{{ if gt .Aliases 0 }}
 
 Aliases:
-  {{ .NameAndAliases }}
-{{- end }}{{ if .HasExample }}
+  {{ .NameAndAliases }}{{ end }}{{ if .HasExample }}
 
 Examples:
   {{ .Example }}{{ end }}{{ if .HasAvailableSubCommands }}
@@ -72,10 +72,10 @@ Available Commands:{{ range .Commands }}{{ if .IsAvailableCommand }}
   {{ rpad .Name .NamePadding }} {{ .Short }}{{ end }}{{ end }}{{ end }}{{ if .HasAvailableLocalFlags }}
 
 Flags:
-{{ .LocalFlags.FlagUsages | trimRightSpace }}{{ end }}{{ if .HasAvailableInheritedFlags }}
+  {{ .LocalFlags.FlagUsages | trimRightSpace }}{{ end }}{{ if .HasAvailableInheritedFlags }}
 
 Global Flags:
-{{ .InheritedFlags.FlagUsages | trimRightSpace }}{{ end }}{{ if .HasHelpSubCommands }}
+  {{ .InheritedFlags.FlagUsages | trimRightSpace }}{{ end }}{{ if .HasHelpSubCommands }}
 
 Additional help topics:{{ range .Commands }}{{ if .IsHelpCommand }}
   {{ rpad .CommandPath .CommandPathPadding }} {{ .Short }}{{ end }}{{ end }}{{ end }}{{ if .HasAvailableSubCommands }}
