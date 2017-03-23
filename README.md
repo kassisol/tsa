@@ -1,6 +1,6 @@
 # HBM TSA
 
-HBM TSA is an application acting as a CA (Certificate Authority) for HBM TWIC.
+HBM TSA is an application acting as a CA (Certificate Authority) for HBM [TWIC](https://github.com/kassisol/twic).
 
 ## Getting Started & Documentation
 
