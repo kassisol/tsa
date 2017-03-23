@@ -110,7 +110,7 @@ func runInit(cmd *cobra.Command, args []string) {
 		os.Exit(0)
 	}
 
-	if err := filedir.CreateDirIfNotExist(command.AppPath, 0700); err != nil {
+	if err := filedir.CreateDirIfNotExist(command.AppPath, false, 0700); err != nil {
 		log.Fatal(err)
 	}
 
@@ -287,7 +287,7 @@ func runInit(cmd *cobra.Command, args []string) {
 	}
 
 	// Create certificate for API
-	if err = filedir.CreateDirIfNotExist(command.ApiCertsDir, 0750); err != nil {
+	if err = filedir.CreateDirIfNotExist(command.ApiCertsDir, false, 0750); err != nil {
 		log.Fatal(err)
 	}
 

@@ -49,10 +49,10 @@
 			"revisionTime": "2017-01-02T12:52:26Z"
 		},
 		{
-			"checksumSHA1": "iWy3QHVOxjHGN6/BjaAjGO3vC5k=",
+			"checksumSHA1": "2HLe0E82q9HNEgATHff2iopMUbI=",
 			"path": "github.com/juliengk/go-cert/ca",
-			"revision": "9819bf17feb7930ac065487d5fdba6a9c89e9933",
-			"revisionTime": "2017-02-15T03:25:37Z"
+			"revision": "f36a973d7d3e5086beffafae1a74b246d838a3d9",
+			"revisionTime": "2017-03-23T19:16:44Z"
 		},
 		{
 			"checksumSHA1": "thLb2xmahj+vdkjQtCivHp6rw4I=",
@@ -103,10 +103,10 @@
 			"revisionTime": "2017-02-03T15:06:23Z"
 		},
 		{
-			"checksumSHA1": "5PTXym8qtV0VAjFAl2wWxz6J9mE=",
+			"checksumSHA1": "blC8BiiPdg4xYMXS6iOE7G7ueqI=",
 			"path": "github.com/juliengk/go-utils/filedir",
-			"revision": "066bd06ec6dcd9f773993273f04463d7ac2774e6",
-			"revisionTime": "2017-03-17T14:03:18Z"
+			"revision": "200136242a4e39522f434da7e073e15d34944077",
+			"revisionTime": "2017-03-23T14:49:40Z"
 		},
 		{
 			"checksumSHA1": "qt4iptV5cFKUkM/+I94ieme7AIM=",

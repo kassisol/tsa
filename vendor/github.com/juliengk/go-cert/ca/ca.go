@@ -25,19 +25,19 @@ func InitCA(rootDir string, template *x509.Certificate) (*CA, error) {
 	caKeyFile := path.Join(privateDir, "ca.key")
 	caCrtFile := path.Join(certsDir, "ca.crt")
 
-	if err := filedir.CreateDirIfNotExist(caDir, 0755); err != nil {
+	if err := filedir.CreateDirIfNotExist(caDir, false, 0755); err != nil {
 		return nil, err
 	}
 
-	if err := filedir.CreateDirIfNotExist(certsDir, 0755); err != nil {
+	if err := filedir.CreateDirIfNotExist(certsDir, false, 0755); err != nil {
 		return nil, err
 	}
 
-	if err := filedir.CreateDirIfNotExist(crlDir, 0755); err != nil {
+	if err := filedir.CreateDirIfNotExist(crlDir, false, 0755); err != nil {
 		return nil, err
 	}
 
-	if err := filedir.CreateDirIfNotExist(privateDir, 0755); err != nil {
+	if err := filedir.CreateDirIfNotExist(privateDir, false, 0755); err != nil {
 		return nil, err
 	}
 

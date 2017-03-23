@@ -12,10 +12,16 @@ func DirExists(path string) bool {
 	return true
 }
 
-func CreateDirIfNotExist(path string, perm os.FileMode) error {
+func CreateDirIfNotExist(path string, parent bool, perm os.FileMode) error {
 	if !DirExists(path) {
-		if err := os.Mkdir(path, perm); err != nil {
-			return err
+		if parent {
+			if err := os.MkdirAll(path, perm); err != nil {
+				return err
+			}
+		} else {
+			if err := os.Mkdir(path, perm); err != nil {
+				return err
+			}
 		}
 	}
 
