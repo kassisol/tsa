@@ -41,12 +41,9 @@ func newCommand() *cobra.Command {
 }
 
 func main() {
-	user, err := user.New()
-	if err != nil {
-		utils.Exit(err)
-	}
+	u := user.New()
 
-	if !user.IsRoot() {
+	if !u.IsRoot() {
 		utils.Exit(fmt.Errorf("You must be root to run that command"))
 	}
 
