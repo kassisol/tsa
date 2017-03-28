@@ -311,10 +311,6 @@
 			"path": "gopkg.in/ldap.v2",
 			"revision": "8168ee085ee43257585e50c6441aadf54ecb2c9f",
 			"revisionTime": "2016-12-01T20:47:33Z"
-		},
-		{
-			"path": "vendor/github.com/spf13/cobra",
-			"revision": ""
 		}
 	],
 	"rootPath": "github.com/kassisol/tsa"
