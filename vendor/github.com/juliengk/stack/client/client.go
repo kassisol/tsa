@@ -129,7 +129,15 @@ func (r *Request) Do(method string, body io.Reader) Result {
 
 	resp, err := clnt.Do(req)
 	if err != nil {
-		return Result{resp.StatusCode, req.Header, nil, err}
+		r := Result{
+			Header: req.Header,
+			Error:  err,
+		}
+		if resp != nil {
+			r.StatusCode = resp.StatusCode
+		}
+
+		return r
 	}
 	defer resp.Body.Close()
 
