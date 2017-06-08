@@ -1,6 +1,8 @@
 package ldap
 
 import (
+	"fmt"
+
 	"github.com/kassisol/tsa/cli/command"
 	"github.com/kassisol/tsa/storage"
 )
@@ -20,6 +22,14 @@ func (c *Config) AddConfig(key, value string) error {
 
 	if err = c.ValidConfigKeyCount(key); err != nil {
 		return err
+	}
+
+	// IV - Value
+	values := s.GetConfig(key)
+	for _, v := range values {
+		if v.Value == value {
+			return fmt.Errorf("Key \"%s\" already has value \"%s\"", key, value)
+		}
 	}
 
 	// Add data to DB
