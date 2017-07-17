@@ -21,13 +21,16 @@ func authorization(username, password string, c echo.Context) (bool, error) {
 		log.Warning(err)
 	}
 
-	ls := a.Login(username, password)
+	loginStatus, err := a.Login(username, password)
+	if err != nil {
+		return false, err
+	}
 
-	if ls > 0 {
+	if loginStatus > 0 {
 		c.Set("username", username)
 
 		admin := false
-		if ls == 1 {
+		if loginStatus == 1 {
 			admin = true
 		}
 		c.Set("admin", admin)

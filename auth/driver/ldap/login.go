@@ -27,14 +27,14 @@ func isMemberOf(userMembers []string, groups []sdrv.ServerConfigResult) bool {
 	return false
 }
 
-func (c *Config) Login(username, password string) driver.LoginStatus {
+func (c *Config) Login(username, password string) (driver.LoginStatus, error) {
 	if err := c.IsConfigOK(); err != nil {
-		return driver.Failed
+		return driver.Failed, err
 	}
 
 	s, err := storage.NewDriver("sqlite", command.DBFilePath)
 	if err != nil {
-		return driver.Failed
+		return driver.Failed, err
 	}
 	defer s.End()
 
@@ -59,7 +59,7 @@ func (c *Config) Login(username, password string) driver.LoginStatus {
 
 	entry, err := ldapclient.Authenticate(username, password)
 	if err != nil {
-		return driver.Failed
+		return driver.Failed, err
 	}
 
 	userMembers := entry.GetAttributeValues(s.GetConfig("auth_attr_members")[0].Value)
@@ -68,12 +68,12 @@ func (c *Config) Login(username, password string) driver.LoginStatus {
 	groups_user := s.GetConfig("auth_group_user")
 
 	if isMemberOf(userMembers, groups_admin) {
-		return driver.Admin
+		return driver.Admin, nil
 	}
 
 	if isMemberOf(userMembers, groups_user) {
-		return driver.User
+		return driver.User, nil
 	}
 
-	return driver.None
+	return driver.None, nil
 }
