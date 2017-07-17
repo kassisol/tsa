@@ -114,6 +114,14 @@ func runInit(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
+	defer func() {
+		if r := recover(); r != nil {
+			os.RemoveAll(command.AppPath)
+
+			log.Fatal(r)
+		}
+	}()
+
 	catype = "root"
 
 	if len(serverDuration) <= 0 {
@@ -163,7 +171,7 @@ func runInit(cmd *cobra.Command, args []string) {
 		if len(apifqdn) <= 0 {
 			af, err := os.Hostname()
 			if err != nil {
-				log.Fatal(err)
+				panic(err)
 			}
 			apifqdn = af
 		}
@@ -186,43 +194,43 @@ func runInit(cmd *cobra.Command, args []string) {
 	// DB
 	s, err := storage.NewDriver("sqlite", command.DBFilePath)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	defer s.End()
 
 	// Input validations
 	// IV - CA Type
 	if err = clivalidation.IsValidCAType(catype); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// IV - Organizational Unit
 	if err = helpers.IsValidCAOrgUnit(ou); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// IV - E-mail
 	if err = validation.IsValidEmail(email); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// IV - API FQDN
 	if err = validation.IsValidFQDN(apifqdn); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// IV - API Bind
 	if err = validation.IsValidIP(apibind); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// IV - API Port
 	port, err := strconv.Atoi(apiport)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	if err = validation.IsValidPort(port); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// Save inputs to DB
@@ -267,12 +275,12 @@ func runInit(cmd *cobra.Command, args []string) {
 
 	caTemplate, err := ca.CreateTemplate(true, caSubject, caAltnames, caDate, caSN, "")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	newCA, err := ca.InitCA(command.AppPath, caTemplate)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	ca.CreateCRLFile(command.CaCrlFile)
@@ -318,23 +326,23 @@ func runInit(cmd *cobra.Command, args []string) {
 	}
 
 	if err = createCert(newCA, apiconfig); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// Create certificate for Docker Engine
 	if serverEngineCertCreate {
 		if err = os.MkdirAll(command.EngineCertsDir, 0755); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 		if err = filedir.CopyFile(command.ApiKeyFile, command.EngineKeyFile); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 		if err = filedir.CopyFile(command.ApiCrtFile, command.EngineCrtFile); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 		if err = filedir.CopyFile(command.CaCrtFile, command.EngineCaFile); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 	}
 }
