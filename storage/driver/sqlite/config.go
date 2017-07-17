@@ -49,7 +49,7 @@ func (c *Config) ListConfigs(prefix string) []driver.ServerConfigResult {
 
 	if prefix != "" {
 		pre := fmt.Sprintf("%s_%s", prefix, "%")
-		sql = sql.Where("key LIKE ?", pre)
+		sql = sql.Where("key LIKE ?", pre).Order("key")
 	}
 
 	sql.Find(&serverconfigs)
