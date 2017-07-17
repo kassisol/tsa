@@ -163,40 +163,40 @@
 			"revisionTime": "2017-02-14T07:18:44Z"
 		},
 		{
-			"checksumSHA1": "qUd2AA/+1E7WacQ/2pNaSiU8azM=",
+			"checksumSHA1": "JOB6HZdNDM1X0hj0hO5bhiveIj4=",
 			"path": "github.com/labstack/echo",
-			"revision": "394f533510cc577dd4e136b56de3802a4f88f7b4",
-			"revisionTime": "2017-02-14T22:11:35Z"
+			"revision": "a5c75b002d4ff1d0b2886fa675464e675f2ec140",
+			"revisionTime": "2017-07-14T18:55:19Z"
 		},
 		{
-			"checksumSHA1": "EMeRIQY2vGlMS+0A1/F8qatmDsM=",
+			"checksumSHA1": "LtqhA32abPaDJSIsYD4C4Whf9eU=",
 			"path": "github.com/labstack/echo/middleware",
-			"revision": "394f533510cc577dd4e136b56de3802a4f88f7b4",
-			"revisionTime": "2017-02-14T22:11:35Z"
+			"revision": "a5c75b002d4ff1d0b2886fa675464e675f2ec140",
+			"revisionTime": "2017-07-14T18:55:19Z"
 		},
 		{
 			"checksumSHA1": "NvfQq6Y6kh9cMw+y1m00ivEd5b4=",
 			"path": "github.com/labstack/gommon/bytes",
-			"revision": "f72d3c883f8ea180da8f085dd320804c41332ad1",
-			"revisionTime": "2017-01-12T04:03:50Z"
+			"revision": "779b8a8b9850a97acba6a3fe20feb628c39e17c1",
+			"revisionTime": "2017-07-12T19:11:37Z"
 		},
 		{
 			"checksumSHA1": "R6DzcBLEP0BONPpsyr+11N7xh5w=",
 			"path": "github.com/labstack/gommon/color",
-			"revision": "f72d3c883f8ea180da8f085dd320804c41332ad1",
-			"revisionTime": "2017-01-12T04:03:50Z"
+			"revision": "779b8a8b9850a97acba6a3fe20feb628c39e17c1",
+			"revisionTime": "2017-07-12T19:11:37Z"
 		},
 		{
 			"checksumSHA1": "uHA6zbtxzJce4r+6uk8zu11qkuk=",
 			"path": "github.com/labstack/gommon/log",
-			"revision": "f72d3c883f8ea180da8f085dd320804c41332ad1",
-			"revisionTime": "2017-01-12T04:03:50Z"
+			"revision": "779b8a8b9850a97acba6a3fe20feb628c39e17c1",
+			"revisionTime": "2017-07-12T19:11:37Z"
 		},
 		{
-			"checksumSHA1": "XvsHo25Kr69E5xxTDatXzCQc6sI=",
+			"checksumSHA1": "lW02E/TGpV59u9q49TsK0Cmva0c=",
 			"path": "github.com/labstack/gommon/random",
-			"revision": "f72d3c883f8ea180da8f085dd320804c41332ad1",
-			"revisionTime": "2017-01-12T04:03:50Z"
+			"revision": "779b8a8b9850a97acba6a3fe20feb628c39e17c1",
+			"revisionTime": "2017-07-12T19:11:37Z"
 		},
 		{
 			"checksumSHA1": "I4njd26dG5hxFT2nawuByM4pxzY=",

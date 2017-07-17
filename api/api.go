@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/middleware"
 )
 
-func authorization(username, password string, c echo.Context) bool {
+func authorization(username, password string, c echo.Context) (bool, error) {
 	s, err := storage.NewDriver("sqlite", command.DBFilePath)
 	if err != nil {
 		log.Fatal(err)
@@ -32,10 +32,10 @@ func authorization(username, password string, c echo.Context) bool {
 		}
 		c.Set("admin", admin)
 
-		return true
+		return true, nil
 	}
 
-	return false
+	return false, nil
 }
 
 func API(jwk []byte, addr string) {
