@@ -16,13 +16,20 @@ func authorization(username, password string, c echo.Context) (bool, error) {
 	}
 	defer s.End()
 
-	a, err := auth.NewDriver(s.GetConfig("auth_type")[0].Value)
+	authType := s.GetConfig("auth_type")[0].Value
+	if authType == "none" {
+		log.Warning("No authentication configured")
+	}
+
+	a, err := auth.NewDriver(authType)
 	if err != nil {
 		log.Warning(err)
 	}
 
 	loginStatus, err := a.Login(username, password)
 	if err != nil {
+		log.Warning(err)
+
 		return false, err
 	}
 
@@ -69,5 +76,5 @@ func API(jwk []byte, addr string) {
 	// Revoke
 	r.POST("/revoke-cert", RevokeCertHandle)
 
-	e.Logger.Fatal(e.StartTLS(addr, command.ApiCrtFile, command.ApiKeyFile))
+	log.Fatal(e.StartTLS(addr, command.ApiCrtFile, command.ApiKeyFile))
 }
