@@ -23,7 +23,7 @@ func newAddCommand() *cobra.Command {
 }
 
 func runAdd(cmd *cobra.Command, args []string) {
-	if len(args) < 1 || len(args) > 2 {
+	if len(args) < 2 || len(args) > 2 {
 		cmd.Usage()
 		os.Exit(-1)
 	}
