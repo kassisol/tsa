@@ -48,7 +48,7 @@ func (c *Config) IsConfigOK() error {
 	}
 
 	if len(missingKeys) > 0 {
-		return fmt.Errorf("Authentication configuration keys MANDATORY: ", strings.Join(missingKeys, ","))
+		return fmt.Errorf("Authentication configuration keys MANDATORY: %s", strings.Join(missingKeys, ","))
 	}
 
 	return nil
