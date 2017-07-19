@@ -15,6 +15,7 @@ import (
 var (
 	serverBindAddress string
 	serverBindPort    string
+	serverBindTLS     bool
 )
 
 func newStartCommand() *cobra.Command {
@@ -28,6 +29,7 @@ func newStartCommand() *cobra.Command {
 	flags := cmd.Flags()
 	flags.StringVarP(&serverBindAddress, "bind-address", "a", "", "Bind Address")
 	flags.StringVarP(&serverBindPort, "bind-port", "p", "", "Bind Port")
+	flags.BoolVarP(&serverBindTLS, "tls", "t", false, "Enable TLS certificates")
 
 	return cmd
 }
@@ -61,13 +63,17 @@ func runStart(cmd *cobra.Command, args []string) {
 		bindPort = serverBindPort
 	} else {
 		bindPort = s.GetConfig("api_port")[0].Value
+
+		if !serverBindTLS && bindPort == "443" {
+			bindPort = "80"
+		}
 	}
 
 	jwk := []byte(s.GetConfig("jwk")[0].Value)
 
 	addr := fmt.Sprintf("%s:%s", bindAddress, bindPort)
 
-	api.API(jwk, addr)
+	api.API(jwk, serverBindTLS, addr)
 }
 
 var startDescription = `

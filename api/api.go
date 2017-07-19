@@ -48,7 +48,7 @@ func authorization(username, password string, c echo.Context) (bool, error) {
 	return false, nil
 }
 
-func API(jwk []byte, addr string) {
+func API(jwk []byte, tls bool, addr string) {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
@@ -76,5 +76,9 @@ func API(jwk []byte, addr string) {
 	// Revoke
 	r.POST("/revoke-cert", RevokeCertHandle)
 
-	log.Fatal(e.StartTLS(addr, command.ApiCrtFile, command.ApiKeyFile))
+	if tls {
+		log.Fatal(e.StartTLS(addr, command.ApiCrtFile, command.ApiKeyFile))
+	} else {
+		log.Fatal(e.Start(addr))
+	}
 }
