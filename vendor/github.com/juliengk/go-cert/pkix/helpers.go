@@ -36,28 +36,28 @@ func NewSubjectAltNames(dnsNames, emailAddresses []string, ipAddresses []net.IP)
 	}
 }
 
-func NewDNSNames() CertDNSNames {
-	return CertDNSNames{}
+func NewDNSNames() *CertDNSNames {
+	return &CertDNSNames{}
 }
 
-func (d CertDNSNames) AddDNS(dns string) {
-	d = append(d, dns)
+func (d *CertDNSNames) AddDNS(dns string) {
+	*d = append(*d, dns)
 }
 
-func NewEmails() CertEmails {
-	return CertEmails{}
+func NewEmails() *CertEmails {
+	return &CertEmails{}
 }
 
-func (e CertEmails) AddEmail(email string) {
-	e = append(e, email)
+func (e *CertEmails) AddEmail(email string) {
+	*e = append(*e, email)
 }
 
-func NewIPs() CertIPs {
-	return CertIPs{}
+func NewIPs() *CertIPs {
+	return &CertIPs{}
 }
 
-func (i CertIPs) AddIP(ip net.IP) {
-	i = append(i, ip)
+func (i *CertIPs) AddIP(ip net.IP) {
+	*i = append(*i, ip)
 }
 
 func ToPEMFile(path string, pemBytes []byte, mode os.FileMode) error {

@@ -49,7 +49,7 @@ func CreateCSR(country, state, locality, org, ou, cn, email string, altnames []s
 		}
 	}
 
-	ans := pkix.NewSubjectAltNames(ndn, ne, nip)
+	ans := pkix.NewSubjectAltNames(*ndn, *ne, *nip)
 
 	csr, err := pkix.NewCertificateRequest(key, subject, ans)
 	if err != nil {

@@ -24,12 +24,16 @@ func CreateTemplate(isCA bool, subject cpkix.Name, altnames pkix.AltNames, date 
 		template.IsCA = true
 	}
 
-	if len(altnames.EmailAddresses) > 0 {
-		template.EmailAddresses = altnames.EmailAddresses
-	}
-
 	if len(altnames.DNSNames) > 0 {
 		template.DNSNames = altnames.DNSNames
+	}
+
+	if len(altnames.IPAddresses) > 0 {
+		template.IPAddresses = altnames.IPAddresses
+	}
+
+	if len(altnames.EmailAddresses) > 0 {
+		template.EmailAddresses = altnames.EmailAddresses
 	}
 
 	if len(CRLDistributionPoint) > 0 {

@@ -267,7 +267,7 @@ func runInit(cmd *cobra.Command, args []string) {
 
 	caIP := pkix.NewIPs()
 
-	caAltnames := pkix.NewSubjectAltNames(caNDN, caNE, caIP)
+	caAltnames := pkix.NewSubjectAltNames(*caNDN, *caNE, *caIP)
 
 	d, _ := strconv.Atoi(duration)
 	caDate := ca.CreateDate(d)
@@ -379,7 +379,7 @@ func createCert(newCA *ca.CA, config configCert) error {
 		}
 	}
 
-	altnames := pkix.NewSubjectAltNames(ndn, ne, ips)
+	altnames := pkix.NewSubjectAltNames(*ndn, *ne, *ips)
 
 	csr, err := pkix.NewCertificateRequest(key, subject, altnames)
 	if err != nil {

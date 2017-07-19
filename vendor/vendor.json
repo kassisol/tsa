@@ -55,46 +55,46 @@
 			"revisionTime": "2017-01-02T12:52:26Z"
 		},
 		{
-			"checksumSHA1": "2HLe0E82q9HNEgATHff2iopMUbI=",
+			"checksumSHA1": "Vu3qUQTkkV6wNNU2WXAsTB5DbXE=",
 			"path": "github.com/juliengk/go-cert/ca",
-			"revision": "f36a973d7d3e5086beffafae1a74b246d838a3d9",
-			"revisionTime": "2017-03-23T19:16:44Z"
+			"revision": "40c027d764ec8c43a0c47644e209c68717823e56",
+			"revisionTime": "2017-07-19T13:21:51Z"
 		},
 		{
-			"checksumSHA1": "thLb2xmahj+vdkjQtCivHp6rw4I=",
+			"checksumSHA1": "N2TlO9CG2Zq6zMqJQFbFjbKQzsA=",
 			"path": "github.com/juliengk/go-cert/ca/database",
-			"revision": "9819bf17feb7930ac065487d5fdba6a9c89e9933",
-			"revisionTime": "2017-02-15T03:25:37Z"
+			"revision": "40c027d764ec8c43a0c47644e209c68717823e56",
+			"revisionTime": "2017-07-19T13:21:51Z"
 		},
 		{
 			"checksumSHA1": "kJTlh2h015R0yTm+D+XHPBOd9Hw=",
 			"path": "github.com/juliengk/go-cert/ca/database/backend",
-			"revision": "9819bf17feb7930ac065487d5fdba6a9c89e9933",
-			"revisionTime": "2017-02-15T03:25:37Z"
+			"revision": "40c027d764ec8c43a0c47644e209c68717823e56",
+			"revisionTime": "2017-07-19T13:21:51Z"
 		},
 		{
 			"checksumSHA1": "0XHfctVKHfUHNa/RzR4uDWvp3Qc=",
 			"path": "github.com/juliengk/go-cert/ca/database/backend/sqlite",
-			"revision": "9819bf17feb7930ac065487d5fdba6a9c89e9933",
-			"revisionTime": "2017-02-15T03:25:37Z"
+			"revision": "40c027d764ec8c43a0c47644e209c68717823e56",
+			"revisionTime": "2017-07-19T13:21:51Z"
 		},
 		{
 			"checksumSHA1": "oPS5VKqekhBCX1bS2hp9cO/EEmo=",
 			"path": "github.com/juliengk/go-cert/errors",
-			"revision": "9819bf17feb7930ac065487d5fdba6a9c89e9933",
-			"revisionTime": "2017-02-15T03:25:37Z"
+			"revision": "40c027d764ec8c43a0c47644e209c68717823e56",
+			"revisionTime": "2017-07-19T13:21:51Z"
 		},
 		{
-			"checksumSHA1": "06C+F72gnM3x01EaNoEV79vRcqE=",
+			"checksumSHA1": "vZZqTmcNLN5ZpiqrydQlJjVg8IY=",
 			"path": "github.com/juliengk/go-cert/helpers",
-			"revision": "9819bf17feb7930ac065487d5fdba6a9c89e9933",
-			"revisionTime": "2017-02-15T03:25:37Z"
+			"revision": "40c027d764ec8c43a0c47644e209c68717823e56",
+			"revisionTime": "2017-07-19T13:21:51Z"
 		},
 		{
-			"checksumSHA1": "SyhoOFtLyzGzWdajIMyyHubgmw4=",
+			"checksumSHA1": "6p4Mz9RcF0s9wTsqrsbg4Sq8MWQ=",
 			"path": "github.com/juliengk/go-cert/pkix",
-			"revision": "9819bf17feb7930ac065487d5fdba6a9c89e9933",
-			"revisionTime": "2017-02-15T03:25:37Z"
+			"revision": "40c027d764ec8c43a0c47644e209c68717823e56",
+			"revisionTime": "2017-07-19T13:21:51Z"
 		},
 		{
 			"checksumSHA1": "IMZG/QuEZlQVNbttmbSd4chkXyk=",
