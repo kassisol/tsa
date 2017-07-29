@@ -15,11 +15,11 @@ import (
 	"github.com/juliengk/go-cert/pkix"
 	"github.com/juliengk/go-utils/filedir"
 	"github.com/juliengk/go-utils/ip"
-	"github.com/juliengk/go-utils/random"
 	"github.com/juliengk/go-utils/readinput"
 	"github.com/juliengk/go-utils/validation"
 	"github.com/kassisol/tsa/cli/command"
 	clivalidation "github.com/kassisol/tsa/cli/validation"
+	"github.com/kassisol/tsa/pkg/token"
 	"github.com/kassisol/tsa/storage"
 	"github.com/spf13/cobra"
 )
@@ -249,8 +249,7 @@ func runInit(cmd *cobra.Command, args []string) {
 	s.AddConfig("api_bind", apibind)
 	s.AddConfig("api_port", apiport)
 
-	letterBytes := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_-+="
-	s.AddConfig("jwk", random.RandString(letterBytes, 24))
+	s.AddConfig("jwk", token.GenerateJWK("", 24))
 
 	s.AddConfig("auth_type", "none")
 
