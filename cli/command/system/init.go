@@ -35,7 +35,6 @@ var (
 	serverAPIFQDN          string
 	serverAPIBind          string
 	serverAPIPort          string
-	serverEngineCertCreate bool
 )
 
 type configCommon struct {
@@ -81,8 +80,6 @@ func NewInitCommand() *cobra.Command {
 	flags.StringVarP(&serverAPIFQDN, "api-fqdn", "", "", "API FQDN")
 	flags.StringVarP(&serverAPIBind, "api-bind", "", "0.0.0.0", "API Bind Interface")
 	flags.StringVarP(&serverAPIPort, "api-port", "", "443", "API Port")
-
-	flags.BoolVarP(&serverEngineCertCreate, "engine", "", false, "Create Docker Engine Certificates")
 
 	return cmd
 }
@@ -327,23 +324,6 @@ func runInit(cmd *cobra.Command, args []string) {
 
 	if err = createCert(newCA, apiconfig); err != nil {
 		panic(err)
-	}
-
-	// Create certificate for Docker Engine
-	if serverEngineCertCreate {
-		if err = os.MkdirAll(command.EngineCertsDir, 0755); err != nil {
-			panic(err)
-		}
-
-		if err = filedir.CopyFile(command.ApiKeyFile, command.EngineKeyFile); err != nil {
-			panic(err)
-		}
-		if err = filedir.CopyFile(command.ApiCrtFile, command.EngineCrtFile); err != nil {
-			panic(err)
-		}
-		if err = filedir.CopyFile(command.CaCrtFile, command.EngineCaFile); err != nil {
-			panic(err)
-		}
 	}
 }
 
