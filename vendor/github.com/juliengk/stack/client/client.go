@@ -1,20 +1,26 @@
 package client
 
 import (
+	"context"
 	"crypto/tls"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"time"
 )
 
 type Config struct {
-	//        UserAgent       string
 	Scheme  string
 	Host    string
 	Port    int
 	Path    string
 	Timeout int
+}
+
+type ConfigUnix struct {
+	Path   string
+	Config Config
 }
 
 type BasicAuth struct {
@@ -23,37 +29,47 @@ type BasicAuth struct {
 }
 
 type Request struct {
-	Url       string
-	Headers   map[string]string
-	BasicAuth BasicAuth
-	Values    map[string][]string
-	Timeout   int
+	UnixSocketPath string
+	URL            string
+	Headers        map[string]string
+	BasicAuth      BasicAuth
+	Values         map[string][]string
+	Timeout        int
 }
 
 type Result struct {
-	StatusCode int
-	Header     http.Header
-	Body       []byte
-	Error      error
+	Response *http.Response
+	Body     []byte
+	Error    error
 }
 
 var EmptyHeader = http.Header{}
 
 var methods = []string{
+	"OPTIONS",
 	"GET",
+	"HEAD",
 	"POST",
 	"PUT",
-	"PATCH",
 	"DELETE",
-	"HEAD",
 }
 
 func New(c *Config) (Request, error) {
 	txtUrl := buildUrl(c)
 
 	return Request{
-		Url:     txtUrl,
+		URL:     txtUrl,
 		Timeout: c.Timeout,
+	}, nil
+}
+
+func NewUnix(c *ConfigUnix) (Request, error) {
+	txtUrl := buildUrl(&c.Config)
+
+	return Request{
+		UnixSocketPath: c.Path,
+		URL:            txtUrl,
+		Timeout:        c.Config.Timeout,
 	}, nil
 }
 
@@ -88,24 +104,27 @@ func (r *Request) ValueAdd(name, value string) {
 	}
 }
 
-func (r *Request) Do(method string, body io.Reader) Result {
+func (r *Request) Do(method string, data io.Reader) Result {
+	clnt := &http.Client{
+		Timeout: time.Second * time.Duration(r.Timeout),
+	}
+
 	tlsConfig := &tls.Config{InsecureSkipVerify: true}
 
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
 
-	timeout := time.Second * time.Duration(r.Timeout)
-
-	clnt := &http.Client{
-		Transport: transport,
-		Timeout:   timeout,
+	if len(r.UnixSocketPath) > 0 {
+		transport.DialContext = func(_ context.Context, _, _ string) (net.Conn, error) {
+			return net.Dial("unix", r.UnixSocketPath)
+		}
 	}
 
-	req, err := http.NewRequest(method, r.Url, body)
+	clnt.Transport = transport
+
+	req, err := http.NewRequest(method, r.URL, data)
 	if err != nil {
-		return Result{500, EmptyHeader, nil, err}
+		return Result{Error: err}
 	}
-
-	r.HeaderAdd("Content-Type", "application/json")
 
 	if len(r.Headers) > 0 {
 		for key, value := range r.Headers {
@@ -125,42 +144,56 @@ func (r *Request) Do(method string, body io.Reader) Result {
 				q.Add(k, v)
 			}
 		}
+
+		req.URL.RawQuery = q.Encode()
 	}
 
 	resp, err := clnt.Do(req)
 	if err != nil {
-		r := Result{
-			Header: req.Header,
-			Error:  err,
-		}
+		r := Result{Error: err}
 		if resp != nil {
-			r.StatusCode = resp.StatusCode
+			r.Response = resp
 		}
 
 		return r
 	}
-	defer resp.Body.Close()
 
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return Result{resp.StatusCode, req.Header, nil, err}
+	if method == "OPTIONS" || method == "HEAD" {
+		return Result{Response: resp}
 	}
 
-	return Result{resp.StatusCode, req.Header, b, nil}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return Result{Response: resp, Error: err}
+	}
+
+	return Result{Response: resp, Body: body}
+}
+
+func (r *Request) Options() Result {
+	return r.Do("OPTIONS", nil)
 }
 
 func (r *Request) Get() Result {
 	return r.Do("GET", nil)
 }
 
-func (r *Request) Post(body io.Reader) Result {
-	return r.Do("POST", body)
+func (r *Request) Head() Result {
+	return r.Do("HEAD", nil)
+}
+
+func (r *Request) Post(data io.Reader) Result {
+	return r.Do("POST", data)
 }
 
 /*
-func (r *Request) Put() Result {
-}
-
-func (r *Request) Delete() Result {
+func (r *Request) Put(data io.Reader) Result {
+	return r.Do("PUT", data)
 }
 */
+
+func (r *Request) Delete() Result {
+	return r.Do("DELETE", nil)
+}
