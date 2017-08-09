@@ -4,7 +4,6 @@ import (
 	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/juliengk/go-utils/filedir"
 	"github.com/kassisol/tsa/auth"
 	"github.com/kassisol/tsa/cli/command"
 	"github.com/kassisol/tsa/storage"
@@ -26,10 +25,6 @@ func runAdd(cmd *cobra.Command, args []string) {
 	if len(args) < 2 || len(args) > 2 {
 		cmd.Usage()
 		os.Exit(-1)
-	}
-
-	if !filedir.FileExists(command.DBFilePath) {
-		log.Fatal("Initialization needs to be done first")
 	}
 
 	s, err := storage.NewDriver("sqlite", command.DBFilePath)

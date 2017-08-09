@@ -8,7 +8,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-cert/ca/database"
 	"github.com/juliengk/go-utils"
-	"github.com/juliengk/go-utils/filedir"
 	"github.com/kassisol/tsa/cli/command"
 	"github.com/spf13/cobra"
 )
@@ -34,10 +33,6 @@ func runList(cmd *cobra.Command, args []string) {
 	if len(args) > 0 {
 		cmd.Usage()
 		os.Exit(-1)
-	}
-
-	if !filedir.FileExists(command.DBFilePath) {
-		log.Fatal("Initialization needs to be done first")
 	}
 
 	db, err := database.NewBackend("sqlite", command.CaDir)

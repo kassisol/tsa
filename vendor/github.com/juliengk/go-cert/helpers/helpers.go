@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	cpkix "crypto/x509/pkix"
 	"fmt"
 	"net"
 	"strconv"
@@ -72,6 +73,31 @@ func CreateCrt(crt []byte, crtFile string) error {
 
 	err = pkix.ToPEMFile(crtFile, crtBytes, 0444)
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateSelfSignedCertificate(keyFile, crtFile string, bits int, subject cpkix.Name, altnames pkix.AltNames, date ca.CertDate) error {
+	template, err := ca.CreateTemplate(true, subject, altnames, date, 1, "")
+	if err != nil {
+		return err
+	}
+
+	key, err := CreateKey(bits, keyFile)
+	if err != nil {
+		return err
+	}
+
+	parent := template
+
+	derBytes, err := ca.IssueCertificate(template, parent, key.Public, key.Private)
+	if err != nil {
+		return err
+	}
+
+	if err := CreateCrt(derBytes, crtFile); err != nil {
 		return err
 	}
 

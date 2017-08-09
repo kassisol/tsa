@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"github.com/kassisol/tsa/cli/command/admin"
 	"github.com/kassisol/tsa/cli/command/auth"
 	"github.com/kassisol/tsa/cli/command/cert"
 	"github.com/kassisol/tsa/cli/command/server"
@@ -11,7 +10,6 @@ import (
 
 func AddCommands(cmd *cobra.Command) {
 	cmd.AddCommand(
-		admin.NewCommand(),
 		auth.NewCommand(),
 		cert.NewCommand(),
 		server.NewCommand(),

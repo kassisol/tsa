@@ -48,7 +48,15 @@ func authorization(username, password string, c echo.Context) (bool, error) {
 	return false, nil
 }
 
-func API(jwk []byte, tls bool, addr string) {
+func API(addr string, tls bool) {
+	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer s.End()
+
+	jwk := []byte(s.GetConfig("jwk")[0].Value)
+
 	e := echo.New()
 
 	e.Use(middleware.Logger())

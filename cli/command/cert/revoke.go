@@ -8,7 +8,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-cert/ca"
 	"github.com/juliengk/go-cert/ca/database"
-	"github.com/juliengk/go-utils/filedir"
 	"github.com/kassisol/tsa/cli/command"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ocsp"
@@ -29,10 +28,6 @@ func runRevoke(cmd *cobra.Command, args []string) {
 	if len(args) < 1 || len(args) > 1 {
 		cmd.Usage()
 		os.Exit(-1)
-	}
-
-	if !filedir.FileExists(command.DBFilePath) {
-		log.Fatal("Initialization needs to be done first")
 	}
 
 	serialNumber, err := strconv.Atoi(args[0])
