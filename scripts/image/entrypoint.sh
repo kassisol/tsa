@@ -88,12 +88,7 @@ if [ ! -d ${TSA_LIB} ]; then
 fi
 
 if [ `ls -1 ${TSA_LIB} | wc -l` -eq 0 ]; then
-	ENGINE_PARAM=""
-	if [ ! -z $TSA_ENGINE ]; then
-		ENGINE_PARAM="--engine "
-	fi
-
-        ${TSA} init ${ENGINE_PARAM}\
+        ${TSA} init \
                 --country ${TSA_COUNTRY} \
                 --state ${TSA_STATE} \
                 --city ${TSA_CITY} \

@@ -19,9 +19,3 @@ var ApiCertsDir = path.Join(AppPath, "certs")
 
 var ApiKeyFile = path.Join(ApiCertsDir, "api.key")
 var ApiCrtFile = path.Join(ApiCertsDir, "api.crt")
-
-var EngineCertsDir = "/etc/docker/tls"
-
-var EngineCaFile = path.Join(EngineCertsDir, "ca.pem")
-var EngineKeyFile = path.Join(EngineCertsDir, "server-key.pem")
-var EngineCrtFile = path.Join(EngineCertsDir, "server-cert.pem")
