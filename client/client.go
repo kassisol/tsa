@@ -41,7 +41,7 @@ func (c *Config) GetDirectory() error {
 
 	result := req.Get()
 
-	if result.StatusCode != 200 {
+	if result.Response.StatusCode != 200 {
 		return fmt.Errorf("Problem fetching directory")
 	}
 
@@ -76,7 +76,7 @@ func (c *Config) GetToken(username, password string, ttl int) (string, error) {
 
 	result := req.Get()
 
-	if result.StatusCode != 200 {
+	if result.Response.StatusCode != 200 {
 		return "", fmt.Errorf("Authorization denied")
 	}
 
@@ -103,7 +103,7 @@ func (c *Config) GetCACertificate() ([]byte, error) {
 
 	result := req.Get()
 
-	if result.StatusCode != 200 {
+	if result.Response.StatusCode != 200 {
 		return nil, fmt.Errorf("Could not fetch CA public key")
 	}
 
@@ -147,7 +147,7 @@ func (c *Config) GetCertificate(token string, certType string, csr []byte, durat
 		return nil, err
 	}
 
-	if result.StatusCode != 200 {
+	if result.Response.StatusCode != 200 {
 		return nil, fmt.Errorf(response.Errors.Message)
 	}
 
@@ -184,7 +184,7 @@ func (c *Config) RevokeCertificate(token string, serialNumber int) error {
 		return err
 	}
 
-	if result.StatusCode != 200 {
+	if result.Response.StatusCode != 200 {
 		return fmt.Errorf(response.Errors.Message)
 	}
 
