@@ -38,6 +38,7 @@ func (c *Config) GetDirectory() error {
 	}
 
 	req, _ := client.New(cc)
+	req.HeaderAdd("Accept", "application/json")
 
 	result := req.Get()
 
@@ -71,6 +72,7 @@ func (c *Config) GetToken(username, password string, ttl int) (string, error) {
 	}
 
 	req, _ := client.New(cc)
+	req.HeaderAdd("Accept", "application/json")
 	req.SetBasicAuth(username, password)
 	req.ValueAdd("ttl", strconv.Itoa(ttl))
 
@@ -100,6 +102,7 @@ func (c *Config) GetCACertificate() ([]byte, error) {
 	}
 
 	req, _ := client.New(cc)
+	req.HeaderAdd("Accept", "application/json")
 
 	result := req.Get()
 
@@ -127,6 +130,8 @@ func (c *Config) GetCertificate(token string, certType string, csr []byte, durat
 	}
 
 	req, _ := client.New(cc)
+	req.HeaderAdd("Accept", "application/json")
+	req.HeaderAdd("Content-Type", "application/json")
 	req.HeaderAdd("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	newcert := api.NewCert{
@@ -175,6 +180,8 @@ func (c *Config) RevokeCertificate(token string, serialNumber int) error {
 	}
 
 	req, _ := client.New(cc)
+	req.HeaderAdd("Accept", "application/json")
+	req.HeaderAdd("Content-Type", "application/json")
 	req.HeaderAdd("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	result := req.Post(bytes.NewBuffer(data))
