@@ -21,9 +21,6 @@ func New(url string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	if u.Scheme != "https" {
-		return nil, fmt.Errorf("URL scheme should be https")
-	}
 
 	return &Config{URL: u}, nil
 }
