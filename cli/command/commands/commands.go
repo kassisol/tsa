@@ -15,6 +15,7 @@ func AddCommands(cmd *cobra.Command) {
 		server.NewCommand(),
 		system.NewInfoCommand(),
 		system.NewInitCommand(),
+		system.NewPasswdCommand(),
 		system.NewVersionCommand(),
 	)
 }

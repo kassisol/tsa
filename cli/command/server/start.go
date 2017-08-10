@@ -7,6 +7,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-utils/filedir"
+	"github.com/juliengk/go-utils/password"
 	"github.com/juliengk/go-utils/validation"
 	"github.com/kassisol/tsa/api"
 	"github.com/kassisol/tsa/cli/command"
@@ -71,6 +72,7 @@ func serverInitConfig() error {
 
 	s.AddConfig("jwk", token.GenerateJWK("", 24))
 	s.AddConfig("auth_type", "none")
+	s.AddConfig("admin_password", password.GeneratePassword("admin"))
 
 	return nil
 }

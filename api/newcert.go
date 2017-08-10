@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-cert/ca"
 	"github.com/juliengk/go-cert/ca/database"
 	"github.com/juliengk/go-cert/errors"
@@ -43,6 +44,7 @@ func NewCertHandle(c echo.Context) error {
 	newcert := new(NewCert)
 
 	if err := c.Bind(newcert); err != nil {
+		log.Info(err)
 		e := errors.New(errors.CSRError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
 

@@ -121,6 +121,12 @@
 			"revisionTime": "2017-03-17T14:03:18Z"
 		},
 		{
+			"checksumSHA1": "pSxg49xc7RUFlCz9REImGUPT+Sc=",
+			"path": "github.com/juliengk/go-utils/password",
+			"revision": "fdfeab14609bbb4ff6ed82e003755060a7ce9da2",
+			"revisionTime": "2017-05-19T18:36:51Z"
+		},
+		{
 			"checksumSHA1": "Tn9gcPRVOucI0hb+/ykreDHamb8=",
 			"path": "github.com/juliengk/go-utils/random",
 			"revision": "ea868d6f9306e100d6c43749f3a7dfd2cf823ea0",
@@ -269,6 +275,18 @@
 			"path": "golang.org/x/crypto/acme/autocert",
 			"revision": "453249f01cfeb54c3d549ddb75ff152ca243f9d8",
 			"revisionTime": "2017-02-08T20:51:15Z"
+		},
+		{
+			"checksumSHA1": "UWjVYmoHlIfHzVIskELHiJQtMOI=",
+			"path": "golang.org/x/crypto/bcrypt",
+			"revision": "b176d7def5d71bdd214203491f89843ed217f420",
+			"revisionTime": "2017-07-23T04:49:35Z"
+		},
+		{
+			"checksumSHA1": "oVPHWesOmZ02vLq2fglGvf+AMgk=",
+			"path": "golang.org/x/crypto/blowfish",
+			"revision": "b176d7def5d71bdd214203491f89843ed217f420",
+			"revisionTime": "2017-07-23T04:49:35Z"
 		},
 		{
 			"checksumSHA1": "UlBPMaKC4dO/9ge7wJfDtptVoVo=",

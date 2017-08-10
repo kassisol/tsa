@@ -2,7 +2,9 @@ package api
 
 import (
 	log "github.com/Sirupsen/logrus"
+	pass "github.com/juliengk/go-utils/password"
 	"github.com/kassisol/tsa/auth"
+	"github.com/kassisol/tsa/auth/driver"
 	"github.com/kassisol/tsa/cli/command"
 	"github.com/kassisol/tsa/storage"
 	"github.com/labstack/echo"
@@ -10,6 +12,8 @@ import (
 )
 
 func authorization(username, password string, c echo.Context) (bool, error) {
+	var loginStatus driver.LoginStatus
+
 	s, err := storage.NewDriver("sqlite", command.DBFilePath)
 	if err != nil {
 		log.Fatal(err)
@@ -21,16 +25,22 @@ func authorization(username, password string, c echo.Context) (bool, error) {
 		log.Warning("No authentication configured")
 	}
 
-	a, err := auth.NewDriver(authType)
-	if err != nil {
-		log.Warning(err)
-	}
+	if username == "admin" {
+		if pass.ComparePassword([]byte(password), []byte(s.GetConfig("admin_password")[0].Value)) {
+			loginStatus = 1
+		}
+	} else {
+		a, err := auth.NewDriver(authType)
+		if err != nil {
+			log.Warning(err)
+		}
 
-	loginStatus, err := a.Login(username, password)
-	if err != nil {
-		log.Warning(err)
+		loginStatus, err = a.Login(username, password)
+		if err != nil {
+			log.Warning(err)
 
-		return false, err
+			return false, err
+		}
 	}
 
 	if loginStatus > 0 {
