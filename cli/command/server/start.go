@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-utils/filedir"
@@ -62,7 +63,6 @@ func serverInitConfig() error {
 		return err
 	}
 
-	// DB
 	s, err := storage.NewDriver("sqlite", command.DBFilePath)
 	if err != nil {
 		return err
@@ -138,6 +138,19 @@ func runStart(cmd *cobra.Command, args []string) {
 			log.Fatal("No certificate found")
 		}
 	}
+
+	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer s.End()
+
+	s.RemoveConfig("api_bind", "ALL")
+	s.RemoveConfig("api_port", "ALL")
+	s.RemoveConfig("api_fqdn", "ALL")
+	s.AddConfig("api_bind", serverBindAddress)
+	s.AddConfig("api_port", strconv.Itoa(bindPort))
+	s.AddConfig("api_fqdn", tlsCN)
 
 	addr := fmt.Sprintf("%s:%d", serverBindAddress, bindPort)
 

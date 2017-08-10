@@ -67,12 +67,10 @@ func runInfo(cmd *cobra.Command, args []string) {
 		fmt.Println(" Revoked:", db.Count("R"))
 	}
 
-	/*
 	fmt.Println("API:")
 	fmt.Println(" FQDN:", s.GetConfig("api_fqdn")[0].Value)
 	fmt.Println(" Bind Address:", s.GetConfig("api_bind")[0].Value)
 	fmt.Println(" Bind Port:", s.GetConfig("api_port")[0].Value)
-	*/
 
 	fmt.Println("Auth Type:", s.GetConfig("auth_type")[0].Value)
 
