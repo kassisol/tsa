@@ -37,7 +37,11 @@ func (c *Config) GetDirectory() error {
 		Path:   "/",
 	}
 
-	req, _ := client.New(cc)
+	req, err := client.New(cc)
+	if err != nil {
+		return err
+	}
+
 	req.HeaderAdd("Accept", "application/json")
 
 	result := req.Get()
@@ -71,7 +75,11 @@ func (c *Config) GetToken(username, password string, ttl int) (string, error) {
 		Path:   c.Directory.NewAuthz,
 	}
 
-	req, _ := client.New(cc)
+	req, err := client.New(cc)
+	if err != nil {
+		return "", err
+	}
+
 	req.HeaderAdd("Accept", "application/json")
 	req.SetBasicAuth(username, password)
 	req.ValueAdd("ttl", strconv.Itoa(ttl))
@@ -101,7 +109,11 @@ func (c *Config) GetCACertificate() ([]byte, error) {
 		Path:   c.Directory.CAInfo,
 	}
 
-	req, _ := client.New(cc)
+	req, err := client.New(cc)
+	if err != nil {
+		return nil, err
+	}
+
 	req.HeaderAdd("Accept", "application/json")
 
 	result := req.Get()
@@ -129,7 +141,11 @@ func (c *Config) GetCertificate(token string, certType string, csr []byte, durat
 		Path:   c.Directory.NewApp,
 	}
 
-	req, _ := client.New(cc)
+	req, err := client.New(cc)
+	if err != nil {
+		return nil, err
+	}
+
 	req.HeaderAdd("Accept", "application/json")
 	req.HeaderAdd("Content-Type", "application/json")
 	req.HeaderAdd("Authorization", fmt.Sprintf("Bearer %s", token))
@@ -179,7 +195,11 @@ func (c *Config) RevokeCertificate(token string, serialNumber int) error {
 		Path:   c.Directory.RevokeCert,
 	}
 
-	req, _ := client.New(cc)
+	req, err := client.New(cc)
+	if err != nil {
+		return err
+	}
+
 	req.HeaderAdd("Accept", "application/json")
 	req.HeaderAdd("Content-Type", "application/json")
 	req.HeaderAdd("Authorization", fmt.Sprintf("Bearer %s", token))
