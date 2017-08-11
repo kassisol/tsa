@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/kassisol/tsa/api"
+	"github.com/kassisol/tsa/api/types"
 )
 
 func GetReflectValue(k reflect.Kind, i interface{}) reflect.Value {
@@ -28,14 +28,14 @@ func GetReflectStringValue(i interface{}) string {
 	return val.String()
 }
 
-func GetDirectory(i interface{}) api.Directory {
+func GetDirectory(i interface{}) types.Directory {
 	val := GetReflectValue(reflect.Map, i)
 	v := val.Interface().(map[string]interface{})
 
-	return api.Directory{
-		CAInfo:     v["CAInfo"].(string),
-		NewApp:     v["NewApp"].(string),
-		NewAuthz:   v["NewAuthz"].(string),
-		RevokeCert: v["RevokeCert"].(string),
+	return types.Directory{
+		CAInfo:     v["ca_info"].(string),
+		NewApp:     v["new_app"].(string),
+		NewAuthz:   v["new_authz"].(string),
+		RevokeCert: v["revoke_cert"].(string),
 	}
 }

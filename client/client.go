@@ -8,12 +8,12 @@ import (
 
 	"github.com/juliengk/stack/client"
 	"github.com/juliengk/stack/jsonapi"
-	"github.com/kassisol/tsa/api"
+	"github.com/kassisol/tsa/api/types"
 )
 
 type Config struct {
 	URL       *client.URL
-	Directory api.Directory
+	Directory types.Directory
 }
 
 func New(url string) (*Config, error) {
@@ -54,7 +54,7 @@ func (c *Config) GetDirectory() error {
 
 	directory := GetDirectory(response.Data)
 
-	if directory == (api.Directory{}) {
+	if directory == (types.Directory{}) {
 		return fmt.Errorf("Empty Directory")
 	}
 
@@ -147,7 +147,7 @@ func (c *Config) GetCertificate(token string, certType string, csr []byte, durat
 	req.HeaderAdd("Content-Type", "application/json")
 	req.HeaderAdd("Authorization", fmt.Sprintf("Bearer %s", token))
 
-	newcert := api.NewCert{
+	newcert := types.NewCert{
 		Type:     certType,
 		CSR:      csr,
 		Duration: duration,
@@ -176,7 +176,7 @@ func (c *Config) GetCertificate(token string, certType string, csr []byte, durat
 
 // Revoke Certificate
 func (c *Config) RevokeCertificate(token string, serialNumber int) error {
-	revokecert := api.RevokeCert{
+	revokecert := types.RevokeCert{
 		SerialNumber: serialNumber,
 	}
 
