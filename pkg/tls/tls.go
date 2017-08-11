@@ -72,11 +72,12 @@ func (c *Config) CreateSelfSignedCertificate() error {
 	ne := pkix.NewEmails()
 	nip := pkix.NewIPs()
 
+	ndn.AddDNS("localhost")
+
 	ips := []string{}
 
 	interfaces := ip.New()
 	interfaces.Get()
-	interfaces.IgnoreIntf([]string{"lo"})
 
 	for _, intf := range interfaces {
 		if len(intf.V4) > 0 {
