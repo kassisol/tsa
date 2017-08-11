@@ -3,6 +3,7 @@ package api
 import (
 	log "github.com/Sirupsen/logrus"
 	pass "github.com/juliengk/go-utils/password"
+	mw "github.com/kassisol/tsa/api/middleware"
 	"github.com/kassisol/tsa/auth"
 	"github.com/kassisol/tsa/auth/driver"
 	"github.com/kassisol/tsa/cli/command"
@@ -71,6 +72,7 @@ func API(addr string, tls bool) {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(mw.AdminPassword())
 
 	// Directory
 	e.GET("/", IndexHandle)
