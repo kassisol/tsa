@@ -13,6 +13,7 @@ import (
 	"github.com/juliengk/go-cert/pkix"
 	"github.com/juliengk/go-utils/validation"
 	"github.com/juliengk/stack/jsonapi"
+	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/cli/command"
 	apierr "github.com/kassisol/tsa/errors"
 	"github.com/kassisol/tsa/pkg/api"
@@ -41,7 +42,7 @@ func NewCertHandle(c echo.Context) error {
 	defer s.End()
 
 	// Get POST data
-	newcert := new(NewCert)
+	newcert := new(types.NewCert)
 
 	if err := c.Bind(newcert); err != nil {
 		log.Info(err)

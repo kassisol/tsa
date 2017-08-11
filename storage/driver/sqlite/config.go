@@ -3,7 +3,7 @@ package sqlite
 import (
 	"fmt"
 
-	"github.com/kassisol/tsa/storage/driver"
+	"github.com/kassisol/tsa/api/types"
 )
 
 func (c *Config) AddConfig(key, value string) {
@@ -23,14 +23,14 @@ func (c *Config) RemoveConfig(key, value string) {
 	sql.Delete(ServerConfig{})
 }
 
-func (c *Config) GetConfig(key string) []driver.ServerConfigResult {
+func (c *Config) GetConfig(key string) []types.ServerConfig {
 	var serverconfigs []ServerConfig
-	var result []driver.ServerConfigResult
+	var result []types.ServerConfig
 
 	c.DB.Where("key = ?", key).Find(&serverconfigs)
 
 	for _, config := range serverconfigs {
-		r := driver.ServerConfigResult{
+		r := types.ServerConfig{
 			Key:   config.Key,
 			Value: config.Value,
 		}
@@ -41,9 +41,9 @@ func (c *Config) GetConfig(key string) []driver.ServerConfigResult {
 	return result
 }
 
-func (c *Config) ListConfigs(prefix string) []driver.ServerConfigResult {
+func (c *Config) ListConfigs(prefix string) []types.ServerConfig {
 	var serverconfigs []ServerConfig
-	var result []driver.ServerConfigResult
+	var result []types.ServerConfig
 
 	sql := c.DB
 
@@ -55,7 +55,7 @@ func (c *Config) ListConfigs(prefix string) []driver.ServerConfigResult {
 	sql.Find(&serverconfigs)
 
 	for _, config := range serverconfigs {
-		r := driver.ServerConfigResult{
+		r := types.ServerConfig{
 			Key:   config.Key,
 			Value: config.Value,
 		}

@@ -10,6 +10,7 @@ import (
 	"github.com/juliengk/go-cert/ca/database"
 	"github.com/juliengk/go-cert/errors"
 	"github.com/juliengk/stack/jsonapi"
+	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/cli/command"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/kassisol/tsa/pkg/token"
@@ -28,7 +29,7 @@ func RevokeCertHandle(c echo.Context) error {
 	defer db.End()
 
 	// Get POST data
-	revokecert := new(RevokeCert)
+	revokecert := new(types.RevokeCert)
 
 	if err := c.Bind(revokecert); err != nil {
 		r := jsonapi.NewErrorResponse(11000, "Internal error")

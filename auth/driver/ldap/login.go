@@ -6,13 +6,13 @@ import (
 
 	"github.com/juliengk/go-ldapc"
 	"github.com/juliengk/go-utils"
+	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/auth/driver"
 	"github.com/kassisol/tsa/cli/command"
 	"github.com/kassisol/tsa/storage"
-	sdrv "github.com/kassisol/tsa/storage/driver"
 )
 
-func isMemberOf(userMembers []string, groups []sdrv.ServerConfigResult) bool {
+func isMemberOf(userMembers []string, groups []types.ServerConfig) bool {
 	allowedGroups := []string{}
 	for _, group := range groups {
 		allowedGroups = append(allowedGroups, group.Value)

@@ -4,12 +4,13 @@ import (
 	"net/http"
 
 	"github.com/juliengk/stack/jsonapi"
+	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/labstack/echo"
 )
 
 func IndexHandle(c echo.Context) error {
-	directory := Directory{
+	directory := types.Directory{
 		CAInfo:     "/info",
 		NewAuthz:   "/new-authz",
 		NewApp:     "/acme/new-app",
