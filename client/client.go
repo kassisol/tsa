@@ -43,13 +43,17 @@ func (c *Config) GetDirectory() error {
 
 	result := req.Get()
 
-	if result.Response.StatusCode != 200 {
-		return fmt.Errorf("Problem fetching directory")
-	}
-
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
 		return err
+	}
+
+	if result.Response.StatusCode != 200 {
+		if response.Errors == (jsonapi.ResponseMessage{}) {
+			return fmt.Errorf("Problem fetching directory")
+		}
+
+		return fmt.Errorf(response.Errors.Message)
 	}
 
 	directory := GetDirectory(response.Data)
@@ -83,13 +87,17 @@ func (c *Config) GetToken(username, password string, ttl int) (string, error) {
 
 	result := req.Get()
 
-	if result.Response.StatusCode != 200 {
-		return "", fmt.Errorf("Authorization denied")
-	}
-
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
 		return "", err
+	}
+
+	if result.Response.StatusCode != 200 {
+		if response.Errors == (jsonapi.ResponseMessage{}) {
+			return "", fmt.Errorf("Authorization denied")
+		}
+
+		return "", fmt.Errorf(response.Errors.Message)
 	}
 
 	token := GetReflectStringValue(response.Data)
@@ -115,13 +123,17 @@ func (c *Config) GetCACertificate() ([]byte, error) {
 
 	result := req.Get()
 
-	if result.Response.StatusCode != 200 {
-		return nil, fmt.Errorf("Could not fetch CA public key")
-	}
-
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
 		return nil, err
+	}
+
+	if result.Response.StatusCode != 200 {
+		if response.Errors == (jsonapi.ResponseMessage{}) {
+			return nil, fmt.Errorf("Could not fetch CA public key")
+		}
+
+		return nil, fmt.Errorf(response.Errors.Message)
 	}
 
 	info := GetReflectStringValue(response.Data)
