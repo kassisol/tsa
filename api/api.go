@@ -3,11 +3,11 @@ package api
 import (
 	log "github.com/Sirupsen/logrus"
 	pass "github.com/juliengk/go-utils/password"
+	"github.com/kassisol/tsa/api/auth"
+	"github.com/kassisol/tsa/api/auth/driver"
+	"github.com/kassisol/tsa/api/config"
 	mw "github.com/kassisol/tsa/api/middleware"
-	"github.com/kassisol/tsa/auth"
-	"github.com/kassisol/tsa/auth/driver"
-	"github.com/kassisol/tsa/cli/command"
-	"github.com/kassisol/tsa/storage"
+	"github.com/kassisol/tsa/api/storage"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -15,7 +15,7 @@ import (
 func authorization(username, password string, c echo.Context) (bool, error) {
 	var loginStatus driver.LoginStatus
 
-	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	s, err := storage.NewDriver("sqlite", config.AppPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -60,7 +60,7 @@ func authorization(username, password string, c echo.Context) (bool, error) {
 }
 
 func API(addr string, tls bool) {
-	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	s, err := storage.NewDriver("sqlite", config.AppPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -98,7 +98,7 @@ func API(addr string, tls bool) {
 	r.POST("/revoke-cert", RevokeCertHandle)
 
 	if tls {
-		log.Fatal(e.StartTLS(addr, command.ApiCrtFile, command.ApiKeyFile))
+		log.Fatal(e.StartTLS(addr, config.ApiCrtFile, config.ApiKeyFile))
 	} else {
 		log.Fatal(e.Start(addr))
 	}

@@ -1,12 +1,10 @@
-package command
+package config
 
 import (
 	"path"
 )
 
 var AppPath = "/var/lib/tsa"
-
-var DBFilePath = path.Join(AppPath, "data.db")
 
 var CaDir = path.Join(AppPath, "ca")
 var CaPrivateDir = path.Join(CaDir, "private")

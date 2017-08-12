@@ -13,23 +13,15 @@ import (
 )
 
 type Config struct {
-	CN       string
-	Duration int
 	KeyFile  string
 	CertFile string
 }
 
-func New(cn string, duration int, keyfile, certfile string) (*Config, error) {
-	if err := validation.IsValidFQDN(cn); err != nil {
-		return nil, err
-	}
-
+func New(keyfile, certfile string) *Config {
 	return &Config{
-		CN:       cn,
-		Duration: duration,
 		KeyFile:  keyfile,
 		CertFile: certfile,
-	}, nil
+	}
 }
 
 func (c *Config) CertificateExist() bool {
@@ -65,8 +57,12 @@ func (c *Config) IsCertificateExpire() bool {
 	return false
 }
 
-func (c *Config) CreateSelfSignedCertificate() error {
-	subject := pkix.NewSubject("", "", "", "", "", c.CN)
+func (c *Config) CreateSelfSignedCertificate(cn string, duration int) error {
+	if err := validation.IsValidFQDN(cn); err != nil {
+		return err
+	}
+
+	subject := pkix.NewSubject("", "", "", "", "", cn)
 
 	ndn := pkix.NewDNSNames()
 	ne := pkix.NewEmails()
@@ -93,7 +89,7 @@ func (c *Config) CreateSelfSignedCertificate() error {
 
 	altnames := pkix.NewSubjectAltNames(*ndn, *ne, *nip)
 
-	date := ca.CreateDate(c.Duration)
+	date := ca.CreateDate(duration)
 
 	if err := helpers.CreateSelfSignedCertificate(c.KeyFile, c.CertFile, 4096, subject, altnames, date); err != nil {
 		return err

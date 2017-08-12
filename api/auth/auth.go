@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/kassisol/tsa/auth/driver"
+	"github.com/kassisol/tsa/api/auth/driver"
 )
 
 type Initialize func() (driver.Auther, error)

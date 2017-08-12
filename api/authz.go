@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/juliengk/stack/jsonapi"
-	"github.com/kassisol/tsa/errors"
+	"github.com/kassisol/tsa/api/errors"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/kassisol/tsa/pkg/token"
 	"github.com/labstack/echo"

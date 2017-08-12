@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/kassisol/tsa/cli/command"
-	"github.com/kassisol/tsa/errors"
-	"github.com/kassisol/tsa/storage"
+	"github.com/kassisol/tsa/api/config"
+	"github.com/kassisol/tsa/api/errors"
+	"github.com/kassisol/tsa/api/storage"
 	"github.com/labstack/echo"
 )
 
@@ -58,7 +58,7 @@ func JWTFromHeader(c echo.Context, header string, authScheme string) (string, er
 }
 
 func GetSigningKey() ([]byte, error) {
-	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	s, err := storage.NewDriver("sqlite", config.AppPath)
 	if err != nil {
 		e := errors.New(errors.DatabaseError, errors.ReadFailed)
 

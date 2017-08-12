@@ -1,6 +1,6 @@
 # HBM TSA
 
-HBM TSA is an application acting as a CA (Certificate Authority) for HBM [TWIC](https://github.com/kassisol/twic).
+HBM TSA is an application acting as a CA (Certification Authority) server to issue certificates for Docker Engine with TLS enabled.
 
 ## Getting Started & Documentation
 

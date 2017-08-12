@@ -6,10 +6,10 @@ import (
 
 	aerrors "github.com/juliengk/go-cert/errors"
 	"github.com/juliengk/stack/jsonapi"
-	"github.com/kassisol/tsa/cli/command"
-	apierr "github.com/kassisol/tsa/errors"
+	conf "github.com/kassisol/tsa/api/config"
+	apierr "github.com/kassisol/tsa/api/errors"
+	"github.com/kassisol/tsa/api/storage"
 	"github.com/kassisol/tsa/pkg/api"
-	"github.com/kassisol/tsa/storage"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -43,7 +43,7 @@ func CAInitWithConfig(config CAInitConfig) echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			s, err := storage.NewDriver("sqlite", command.DBFilePath)
+			s, err := storage.NewDriver("sqlite", conf.AppPath)
 			if err != nil {
 				e := aerrors.New(apierr.DatabaseError, aerrors.ReadFailed)
 				r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)

@@ -8,7 +8,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-cert/ca"
 	"github.com/juliengk/go-cert/ca/database"
-	"github.com/kassisol/tsa/cli/command"
+	"github.com/kassisol/tsa/api/config"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ocsp"
 )
@@ -35,7 +35,7 @@ func runRevoke(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	db, err := database.NewBackend("sqlite", command.CaDir)
+	db, err := database.NewBackend("sqlite", config.CaDir)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -6,14 +6,14 @@ import (
 
 	"github.com/juliengk/go-cert/errors"
 	"github.com/juliengk/stack/jsonapi"
-	"github.com/kassisol/tsa/cli/command"
+	"github.com/kassisol/tsa/api/config"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/labstack/echo"
 )
 
 func InfoHandle(c echo.Context) error {
 	// Read CA certificate file
-	cert, err := ioutil.ReadFile(command.CaCrtFile)
+	cert, err := ioutil.ReadFile(config.CaCrtFile)
 	if err != nil {
 		e := errors.New(errors.RootError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)

@@ -8,7 +8,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-cert/ca/database"
 	"github.com/juliengk/go-utils"
-	"github.com/kassisol/tsa/cli/command"
+	"github.com/kassisol/tsa/api/config"
 	"github.com/spf13/cobra"
 )
 
@@ -35,7 +35,7 @@ func runList(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	db, err := database.NewBackend("sqlite", command.CaDir)
+	db, err := database.NewBackend("sqlite", config.CaDir)
 	if err != nil {
 		log.Fatal(err)
 	}

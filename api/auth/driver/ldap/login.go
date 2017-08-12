@@ -6,10 +6,10 @@ import (
 
 	"github.com/juliengk/go-ldapc"
 	"github.com/juliengk/go-utils"
+	"github.com/kassisol/tsa/api/config"
+	"github.com/kassisol/tsa/api/auth/driver"
+	"github.com/kassisol/tsa/api/storage"
 	"github.com/kassisol/tsa/api/types"
-	"github.com/kassisol/tsa/auth/driver"
-	"github.com/kassisol/tsa/cli/command"
-	"github.com/kassisol/tsa/storage"
 )
 
 func isMemberOf(userMembers []string, groups []types.ServerConfig) bool {
@@ -32,7 +32,7 @@ func (c *Config) Login(username, password string) (driver.LoginStatus, error) {
 		return driver.Failed, err
 	}
 
-	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	s, err := storage.NewDriver("sqlite", config.AppPath)
 	if err != nil {
 		return driver.Failed, err
 	}

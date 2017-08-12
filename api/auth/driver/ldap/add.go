@@ -3,12 +3,12 @@ package ldap
 import (
 	"fmt"
 
-	"github.com/kassisol/tsa/cli/command"
-	"github.com/kassisol/tsa/storage"
+	"github.com/kassisol/tsa/api/config"
+	"github.com/kassisol/tsa/api/storage"
 )
 
 func (c *Config) AddConfig(key, value string) error {
-	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	s, err := storage.NewDriver("sqlite", config.AppPath)
 	if err != nil {
 		return err
 	}

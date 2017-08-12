@@ -4,8 +4,8 @@ import (
 	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/kassisol/tsa/cli/command"
-	"github.com/kassisol/tsa/storage"
+	"github.com/kassisol/tsa/api/config"
+	"github.com/kassisol/tsa/api/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,7 @@ func runDisable(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	s, err := storage.NewDriver("sqlite", config.AppPath)
 	if err != nil {
 		log.Fatal(err)
 	}

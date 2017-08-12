@@ -1,7 +1,7 @@
 package none
 
 import (
-	"github.com/kassisol/tsa/auth/driver"
+	"github.com/kassisol/tsa/api/auth/driver"
 )
 
 func (c *Config) Login(username, password string) (driver.LoginStatus, error) {

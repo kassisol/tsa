@@ -1,4 +1,5 @@
-// HBM TSA is an application acting as a CA (Certificate Authority) for HBM TWIC.
+// HBM TSA is an application acting as a CA (Certification Authority) server
+// to issue certificates for Docker Engine with TLS enabled.
 // Copyright (C) 2017 Kassisol inc.
 //
 // This program is free software: you can redistribute it and/or modify
@@ -17,25 +18,44 @@
 package main
 
 import (
-	"fmt"
-
+	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-utils"
 	"github.com/juliengk/go-utils/user"
-	"github.com/kassisol/tsa/cli/command/commands"
+	"github.com/kassisol/tsa/api/config"
 	"github.com/spf13/cobra"
+)
+
+var (
+	serverBindAddress string
+	serverBindPort    int
+	serverTLS         bool
+	serverTLSCN       string
+	serverTLSDuration int
+	serverTLSGen      bool
+	serverTLSCert     string
+	serverTLSKey      string
 )
 
 func newCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "tsa",
-		Short: "TSA is a CA server",
-		Long:  "TSA is a CA server",
+		Use:   "tsad",
+		Short: "Starts a CA (Certification Authority) server",
+		Long:  daemonDescription,
+		Run:   runDaemon,
 	}
 
 	cmd.SetHelpTemplate(helpTemplate)
 	cmd.SetUsageTemplate(usageTemplate)
 
-	commands.AddCommands(cmd)
+	flags := cmd.Flags()
+	flags.StringVarP(&serverBindAddress, "bind-address", "a", "0.0.0.0", "Bind Address")
+	flags.IntVarP(&serverBindPort, "bind-port", "p", 80, "Bind Port")
+	flags.BoolVarP(&serverTLS, "tls", "t", false, "Enable TLS certificates")
+	flags.StringVarP(&serverTLSCN, "tlscn", "", "", "Certificate Common Name")
+	flags.IntVarP(&serverTLSDuration, "tls-duration", "", 60, "Certificate duration")
+	flags.BoolVarP(&serverTLSGen, "tlsgen", "", false, "Auto generate self-signed TLS certificates")
+	flags.StringVarP(&serverTLSCert, "tlscert", "", config.ApiCrtFile, "Path to TLS certificate file")
+	flags.StringVarP(&serverTLSKey, "tlskey", "", config.ApiKeyFile, "Path to TLS key file")
 
 	return cmd
 }
@@ -44,7 +64,7 @@ func main() {
 	u := user.New()
 
 	if !u.IsRoot() {
-		utils.Exit(fmt.Errorf("You must be root to run that command"))
+		log.Fatal("You must be root to run that command")
 	}
 
 	cmd := newCommand()
@@ -52,6 +72,11 @@ func main() {
 		utils.Exit(err)
 	}
 }
+
+var daemonDescription = `
+Starts a CA (Certificate Authority) server
+
+`
 
 var usageTemplate = `{{ .Short | trim }}
 
@@ -69,7 +94,7 @@ Available Commands:{{ range .Commands }}{{ if .IsAvailableCommand }}
   {{ rpad .Name .NamePadding }} {{ .Short }}{{ end }}{{ end }}{{ end }}{{ if .HasAvailableLocalFlags }}
 
 Flags:
-  {{ .LocalFlags.FlagUsages | trimRightSpace }}{{ end }}{{ if .HasAvailableInheritedFlags }}
+{{ .LocalFlags.FlagUsages | trimRightSpace }}{{ end }}{{ if .HasAvailableInheritedFlags }}
 
 Global Flags:
   {{ .InheritedFlags.FlagUsages | trimRightSpace }}{{ end }}{{ if .HasHelpSubCommands }}

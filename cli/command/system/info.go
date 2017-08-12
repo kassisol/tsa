@@ -8,8 +8,8 @@ import (
 	"github.com/juliengk/go-cert/ca/database"
 	"github.com/juliengk/go-cert/helpers"
 	"github.com/juliengk/go-cert/pkix"
-	"github.com/kassisol/tsa/cli/command"
-	"github.com/kassisol/tsa/storage"
+	"github.com/kassisol/tsa/api/config"
+	"github.com/kassisol/tsa/api/storage"
 	"github.com/kassisol/tsa/version"
 	"github.com/spf13/cobra"
 )
@@ -31,14 +31,14 @@ func runInfo(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	s, err := storage.NewDriver("sqlite", config.AppPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer s.End()
 
 	if len(s.ListConfigs("ca")) > 0 {
-		db, err := database.NewBackend("sqlite", command.CaDir)
+		db, err := database.NewBackend("sqlite", config.CaDir)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -46,7 +46,7 @@ func runInfo(cmd *cobra.Command, args []string) {
 
 		expire := "0000-00-00"
 
-		certificate, err := pkix.NewCertificateFromPEMFile(command.CaCrtFile)
+		certificate, err := pkix.NewCertificateFromPEMFile(config.CaCrtFile)
 		if err == nil {
 			expire = helpers.ExpireDateString(certificate.Crt.NotAfter)
 		}
@@ -77,7 +77,7 @@ func runInfo(cmd *cobra.Command, args []string) {
 	fmt.Println("Server Version:", version.Version)
 	fmt.Println("Storage Driver: sqlite")
 	fmt.Println("Logging Driver: standard")
-	fmt.Println("TSA Root Dir:", command.AppPath)
+	fmt.Println("TSA Root Dir:", config.AppPath)
 }
 
 var infoDescription = `

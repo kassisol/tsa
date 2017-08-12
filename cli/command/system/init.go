@@ -10,20 +10,20 @@ import (
 	"github.com/juliengk/go-cert/pkix"
 	"github.com/juliengk/go-utils/readinput"
 	"github.com/juliengk/go-utils/validation"
-	"github.com/kassisol/tsa/cli/command"
+	"github.com/kassisol/tsa/api/config"
+	"github.com/kassisol/tsa/api/storage"
 	clivalidation "github.com/kassisol/tsa/cli/validation"
-	"github.com/kassisol/tsa/storage"
 	"github.com/spf13/cobra"
 )
 
 var (
-	serverDuration         string
-	serverCountry          string
-	serverState            string
-	serverLocality         string
-	serverOrg              string
-	serverOrgUnit          string
-	serverEmail            string
+	serverDuration string
+	serverCountry  string
+	serverState    string
+	serverLocality string
+	serverOrg      string
+	serverOrgUnit  string
+	serverEmail    string
 )
 
 func NewInitCommand() *cobra.Command {
@@ -62,7 +62,7 @@ func runInit(cmd *cobra.Command, args []string) {
 	}
 
 	// DB
-	s, err := storage.NewDriver("sqlite", command.DBFilePath)
+	s, err := storage.NewDriver("sqlite", config.AppPath)
 	if err != nil {
 		panic(err)
 	}
@@ -74,7 +74,7 @@ func runInit(cmd *cobra.Command, args []string) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			os.RemoveAll(command.CaDir)
+			os.RemoveAll(config.CaDir)
 
 			s.RemoveConfig("ca_type", "ALL")
 			s.RemoveConfig("ca_duration", "ALL")
@@ -134,7 +134,6 @@ func runInit(cmd *cobra.Command, args []string) {
 		email = serverEmail
 	}
 
-
 	// Input validations
 	// IV - CA Type
 	if err := clivalidation.IsValidCAType(catype); err != nil {
@@ -187,11 +186,11 @@ func runInit(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	if _, err = ca.InitCA(command.AppPath, caTemplate); err != nil {
+	if _, err = ca.InitCA(config.AppPath, caTemplate); err != nil {
 		panic(err)
 	}
 
-	ca.CreateCRLFile(command.CaCrlFile)
+	ca.CreateCRLFile(config.CaCrlFile)
 }
 
 var initDescription = `

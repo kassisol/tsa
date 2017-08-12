@@ -1,8 +1,10 @@
 package sqlite
 
 import (
-	"github.com/kassisol/tsa/storage"
-	"github.com/kassisol/tsa/storage/driver"
+	"path"
+
+	"github.com/kassisol/tsa/api/storage"
+	"github.com/kassisol/tsa/api/storage/driver"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -16,8 +18,10 @@ type Config struct {
 	DB *gorm.DB
 }
 
-func New(dbFilePath string) (driver.Storager, error) {
+func New(config string) (driver.Storager, error) {
 	debug := false
+
+	dbFilePath := path.Join(config, "data.db")
 
 	db, err := gorm.Open("sqlite3", dbFilePath)
 	if err != nil {
