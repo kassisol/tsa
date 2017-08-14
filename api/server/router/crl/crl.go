@@ -1,4 +1,4 @@
-package api
+package crl
 
 import (
 	"github.com/kassisol/tsa/api/config"

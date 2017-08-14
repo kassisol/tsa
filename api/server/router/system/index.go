@@ -1,4 +1,4 @@
-package api
+package system
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ import (
 
 func IndexHandle(c echo.Context) error {
 	directory := types.Directory{
-		CAInfo:     "/info",
+		CAInfo:     "/ca",
 		NewAuthz:   "/new-authz",
 		NewApp:     "/acme/new-app",
 		RevokeCert: "/acme/revoke-cert",

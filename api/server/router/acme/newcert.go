@@ -1,4 +1,4 @@
-package api
+package acme
 
 import (
 	"crypto/md5"

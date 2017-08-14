@@ -1,4 +1,4 @@
-package api
+package ca
 
 import (
 	"io/ioutil"
@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func InfoHandle(c echo.Context) error {
+func PubCertHandle(c echo.Context) error {
 	// Read CA certificate file
 	cert, err := ioutil.ReadFile(config.CaCrtFile)
 	if err != nil {

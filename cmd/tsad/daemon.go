@@ -9,7 +9,7 @@ import (
 	"github.com/juliengk/go-utils/filedir"
 	"github.com/juliengk/go-utils/password"
 	"github.com/juliengk/go-utils/validation"
-	"github.com/kassisol/tsa/api"
+	"github.com/kassisol/tsa/api/server"
 	"github.com/kassisol/tsa/api/config"
 	"github.com/kassisol/tsa/api/storage"
 	"github.com/kassisol/tsa/pkg/tls"
@@ -116,5 +116,5 @@ func runDaemon(cmd *cobra.Command, args []string) {
 
 	addr := fmt.Sprintf("%s:%d", serverBindAddress, bindPort)
 
-	api.API(addr, serverTLS)
+	server.API(addr, serverTLS)
 }
