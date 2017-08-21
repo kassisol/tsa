@@ -10,8 +10,8 @@ import (
 	"github.com/juliengk/go-cert/ca/database"
 	"github.com/juliengk/go-cert/errors"
 	"github.com/juliengk/stack/jsonapi"
-	"github.com/kassisol/tsa/api/config"
 	"github.com/kassisol/tsa/api/types"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/kassisol/tsa/pkg/token"
 	"github.com/labstack/echo"
@@ -19,7 +19,12 @@ import (
 )
 
 func RevokeCertHandle(c echo.Context) error {
-	db, err := database.NewBackend("sqlite", config.CaDir)
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		return err
+	}
+
+	db, err := database.NewBackend("sqlite", cfg.CA.Dir.Root)
 	if err != nil {
 		e := errors.New(errors.CertStoreError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)

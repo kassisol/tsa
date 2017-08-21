@@ -6,37 +6,28 @@ import (
 	"strconv"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/juliengk/go-utils/filedir"
 	"github.com/juliengk/go-utils/password"
 	"github.com/juliengk/go-utils/validation"
 	"github.com/kassisol/tsa/api/server"
-	"github.com/kassisol/tsa/api/config"
 	"github.com/kassisol/tsa/api/storage"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/pkg/tls"
 	"github.com/kassisol/tsa/pkg/token"
 	"github.com/spf13/cobra"
 )
 
-func serverInitConfig() error {
-	if filedir.FileExists(config.AppPath) {
-		log.Info("Server initialization already done")
-
-		return nil
-	}
-
-	if err := filedir.CreateDirIfNotExist(config.AppPath, false, 0700); err != nil {
-		return err
-	}
-
-	if err := filedir.CreateDirIfNotExist(config.ApiCertsDir, false, 0750); err != nil {
-		return err
-	}
-
-	s, err := storage.NewDriver("sqlite", config.AppPath)
+func serverInitConfig(appDir string) error {
+	s, err := storage.NewDriver("sqlite", appDir)
 	if err != nil {
 		return err
 	}
 	defer s.End()
+
+	if s.CountConfigKey("jwk") > 0 {
+		log.Info("Server initialization already done")
+
+		return nil
+	}
 
 	s.AddConfig("jwk", token.GenerateJWK("", 24))
 	s.AddConfig("auth_type", "none")
@@ -54,7 +45,12 @@ func runDaemon(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	if err := serverInitConfig(); err != nil {
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := serverInitConfig(cfg.App.Dir.Root); err != nil {
 		log.Fatal(err)
 	}
 
@@ -101,7 +97,7 @@ func runDaemon(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	s, err := storage.NewDriver("sqlite", config.AppPath)
+	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
 	if err != nil {
 		log.Fatal(err)
 	}

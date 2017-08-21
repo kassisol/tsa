@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kassisol/tsa/api/config"
 	"github.com/kassisol/tsa/api/storage"
+	"github.com/kassisol/tsa/pkg/adf"
 )
 
 func (c *Config) IsValidConfigKey(key string) error {
@@ -17,7 +17,12 @@ func (c *Config) IsValidConfigKey(key string) error {
 }
 
 func (c *Config) ValidConfigKeyCount(key string) error {
-	s, err := storage.NewDriver("sqlite", config.AppPath)
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		return err
+	}
+
+	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
 	if err != nil {
 		return err
 	}
@@ -33,7 +38,12 @@ func (c *Config) ValidConfigKeyCount(key string) error {
 }
 
 func (c *Config) IsConfigOK() error {
-	s, err := storage.NewDriver("sqlite", config.AppPath)
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		return err
+	}
+
+	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
 	if err != nil {
 		return err
 	}

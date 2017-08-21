@@ -2,7 +2,6 @@ package server
 
 import (
 	log "github.com/Sirupsen/logrus"
-	"github.com/kassisol/tsa/api/config"
 	"github.com/kassisol/tsa/api/server/httputils"
 	mw "github.com/kassisol/tsa/api/server/middleware"
 	"github.com/kassisol/tsa/api/server/router/acme"
@@ -10,12 +9,18 @@ import (
 	"github.com/kassisol/tsa/api/server/router/crl"
 	"github.com/kassisol/tsa/api/server/router/system"
 	"github.com/kassisol/tsa/api/storage"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
 
 func API(addr string, tls bool) {
-	s, err := storage.NewDriver("sqlite", config.AppPath)
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,7 +59,7 @@ func API(addr string, tls bool) {
 	r.POST("/revoke-cert", acme.RevokeCertHandle)
 
 	if tls {
-		log.Fatal(e.StartTLS(addr, config.ApiCrtFile, config.ApiKeyFile))
+		log.Fatal(e.StartTLS(addr, cfg.API.CrtFile, cfg.API.KeyFile))
 	} else {
 		log.Fatal(e.Start(addr))
 	}

@@ -13,17 +13,22 @@ import (
 	"github.com/juliengk/go-cert/pkix"
 	"github.com/juliengk/go-utils/validation"
 	"github.com/juliengk/stack/jsonapi"
-	"github.com/kassisol/tsa/api/config"
 	apierr "github.com/kassisol/tsa/api/errors"
 	"github.com/kassisol/tsa/api/storage"
 	"github.com/kassisol/tsa/api/types"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/kassisol/tsa/pkg/token"
 	"github.com/labstack/echo"
 )
 
 func NewCertHandle(c echo.Context) error {
-	db, err := database.NewBackend("sqlite", config.CaDir)
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		return err
+	}
+
+	db, err := database.NewBackend("sqlite", cfg.CA.Dir.Root)
 	if err != nil {
 		e := errors.New(errors.CertStoreError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
@@ -32,7 +37,7 @@ func NewCertHandle(c echo.Context) error {
 	}
 	defer db.End()
 
-	s, err := storage.NewDriver("sqlite", config.AppPath)
+	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
 	if err != nil {
 		e := errors.New(apierr.DatabaseError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
@@ -106,7 +111,7 @@ func NewCertHandle(c echo.Context) error {
 	}
 
 	// Sign CSR
-	newCA, err := ca.NewCA(config.AppPath)
+	newCA, err := ca.NewCA(cfg.App.Dir.Root)
 	if err != nil {
 		e := errors.New(errors.RootError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
@@ -173,7 +178,7 @@ func NewCertHandle(c echo.Context) error {
 
 	certName := fmt.Sprintf("%x", md5.Sum([]byte(indexDN)))
 	certNameFile := fmt.Sprintf("%s.crt", certName)
-	certNamePath := path.Join(config.CaCertsDir, certNameFile)
+	certNamePath := path.Join(cfg.CA.Dir.Certs, certNameFile)
 
 	db.New(caSN, indexExpireDate, certNameFile, indexDN)
 

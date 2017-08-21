@@ -10,9 +10,9 @@ import (
 	"github.com/juliengk/go-cert/pkix"
 	"github.com/juliengk/go-utils/readinput"
 	"github.com/juliengk/go-utils/validation"
-	"github.com/kassisol/tsa/api/config"
 	"github.com/kassisol/tsa/api/storage"
 	clivalidation "github.com/kassisol/tsa/cli/validation"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/spf13/cobra"
 )
 
@@ -61,8 +61,12 @@ func runInit(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	// DB
-	s, err := storage.NewDriver("sqlite", config.AppPath)
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
 	if err != nil {
 		panic(err)
 	}
@@ -74,7 +78,7 @@ func runInit(cmd *cobra.Command, args []string) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			os.RemoveAll(config.CaDir)
+			os.RemoveAll(cfg.CA.Dir.Root)
 
 			s.RemoveConfig("ca_type", "ALL")
 			s.RemoveConfig("ca_duration", "ALL")
@@ -186,11 +190,11 @@ func runInit(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	if _, err = ca.InitCA(config.AppPath, caTemplate); err != nil {
+	if _, err = ca.InitCA(cfg.App.Dir.Root, caTemplate); err != nil {
 		panic(err)
 	}
 
-	ca.CreateCRLFile(config.CaCrlFile)
+	ca.CreateCRLFile(cfg.CA.CRLFile)
 }
 
 var initDescription = `

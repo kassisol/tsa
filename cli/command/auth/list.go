@@ -6,8 +6,8 @@ import (
 	"text/tabwriter"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/kassisol/tsa/api/config"
 	"github.com/kassisol/tsa/api/storage"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +29,12 @@ func runList(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	s, err := storage.NewDriver("sqlite", config.AppPath)
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
 	if err != nil {
 		log.Fatal(err)
 	}

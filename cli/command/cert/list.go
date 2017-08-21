@@ -8,7 +8,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-cert/ca/database"
 	"github.com/juliengk/go-utils"
-	"github.com/kassisol/tsa/api/config"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/spf13/cobra"
 )
 
@@ -35,7 +35,12 @@ func runList(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	db, err := database.NewBackend("sqlite", config.CaDir)
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	db, err := database.NewBackend("sqlite", cfg.CA.Dir.Root)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -21,7 +21,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-utils"
 	"github.com/juliengk/go-utils/user"
-	"github.com/kassisol/tsa/api/config"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/spf13/cobra"
 )
 
@@ -47,6 +47,11 @@ func newCommand() *cobra.Command {
 	cmd.SetHelpTemplate(helpTemplate)
 	cmd.SetUsageTemplate(usageTemplate)
 
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		log.Fatal(err)
+	}
+
 	flags := cmd.Flags()
 	flags.StringVarP(&serverBindAddress, "bind-address", "a", "0.0.0.0", "Bind Address")
 	flags.IntVarP(&serverBindPort, "bind-port", "p", 80, "Bind Port")
@@ -54,8 +59,8 @@ func newCommand() *cobra.Command {
 	flags.StringVarP(&serverTLSCN, "tlscn", "", "", "Certificate Common Name")
 	flags.IntVarP(&serverTLSDuration, "tls-duration", "", 60, "Certificate duration")
 	flags.BoolVarP(&serverTLSGen, "tlsgen", "", false, "Auto generate self-signed TLS certificates")
-	flags.StringVarP(&serverTLSCert, "tlscert", "", config.ApiCrtFile, "Path to TLS certificate file")
-	flags.StringVarP(&serverTLSKey, "tlskey", "", config.ApiKeyFile, "Path to TLS key file")
+	flags.StringVarP(&serverTLSCert, "tlscert", "", cfg.API.CrtFile, "Path to TLS certificate file")
+	flags.StringVarP(&serverTLSKey, "tlskey", "", cfg.API.KeyFile, "Path to TLS key file")
 
 	return cmd
 }

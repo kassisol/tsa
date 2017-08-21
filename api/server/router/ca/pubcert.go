@@ -6,14 +6,19 @@ import (
 
 	"github.com/juliengk/go-cert/errors"
 	"github.com/juliengk/stack/jsonapi"
-	"github.com/kassisol/tsa/api/config"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/labstack/echo"
 )
 
 func PubCertHandle(c echo.Context) error {
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		return err
+	}
+
 	// Read CA certificate file
-	cert, err := ioutil.ReadFile(config.CaCrtFile)
+	cert, err := ioutil.ReadFile(cfg.CA.TLS.CrtFile)
 	if err != nil {
 		e := errors.New(errors.RootError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
