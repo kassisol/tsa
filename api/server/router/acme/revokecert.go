@@ -10,6 +10,7 @@ import (
 	"github.com/juliengk/go-cert/ca/database"
 	"github.com/juliengk/go-cert/errors"
 	"github.com/juliengk/stack/jsonapi"
+	"github.com/kassisol/tsa/api/server/httputils"
 	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/pkg/api"
@@ -43,8 +44,16 @@ func RevokeCertHandle(c echo.Context) error {
 	}
 
 	// Get JWT Claims
-	jwt, _ := token.JWTFromHeader(c, "Authorization", "Bearer")
-	claims, _ := token.GetCustomClaims(jwt)
+	authHeader := c.Request().Header.Get("Authorization")
+	jwt, _ := token.JWTFromHeader(authHeader, "Bearer")
+
+	jwk, err := httputils.GetTokenSigningKey()
+	if err != nil {
+		return api.JSON(c, http.StatusInternalServerError, err)
+	}
+
+	t := token.New(jwk, true)
+	claims, _ := t.GetCustomClaims(jwt)
 
 	// Validate
 	rcert := db.List(map[string]string{"serial": strconv.Itoa(revokecert.SerialNumber)})[0]

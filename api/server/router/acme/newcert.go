@@ -14,6 +14,7 @@ import (
 	"github.com/juliengk/go-utils/validation"
 	"github.com/juliengk/stack/jsonapi"
 	apierr "github.com/kassisol/tsa/api/errors"
+	"github.com/kassisol/tsa/api/server/httputils"
 	"github.com/kassisol/tsa/api/storage"
 	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/pkg/adf"
@@ -58,8 +59,16 @@ func NewCertHandle(c echo.Context) error {
 	}
 
 	// Get JWT Claims
-	jwt, _ := token.JWTFromHeader(c, "Authorization", "Bearer")
-	claims, _ := token.GetCustomClaims(jwt)
+	authHeader := c.Request().Header.Get("Authorization")
+	jwt, _ := token.JWTFromHeader(authHeader, "Bearer")
+
+	jwk, err := httputils.GetTokenSigningKey()
+	if err != nil {
+		return api.JSON(c, http.StatusInternalServerError, err)
+	}
+
+	t := token.New(jwk, true)
+	claims, _ := t.GetCustomClaims(jwt)
 
 	// Read CSR
 	csr, err := pkix.NewCertificateRequestFromDER(newcert.CSR)

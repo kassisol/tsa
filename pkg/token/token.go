@@ -1,22 +1,29 @@
 package token
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/kassisol/tsa/api/config"
-	"github.com/kassisol/tsa/api/errors"
-	"github.com/kassisol/tsa/api/storage"
-	"github.com/labstack/echo"
 )
+
+type Config struct {
+	JWK            []byte
+	ValidSignature bool
+}
 
 type MyCustomClaims struct {
 	Admin bool `json:"admin"`
 	jwt.StandardClaims
 }
 
-func New(jwk []byte, audience string, admin bool, ttl int) (string, error) {
+func New(jwk []byte, valid bool) *Config {
+	return &Config{
+		JWK:            jwk,
+		ValidSignature: valid,
+	}
+}
+
+func (c *Config) Create(audience, issuer string, admin bool, ttl int) (string, error) {
 	now := time.Now()
 
 	expireMinutes := 5
@@ -33,12 +40,12 @@ func New(jwk []byte, audience string, admin bool, ttl int) (string, error) {
 			Audience:  audience,
 			ExpiresAt: now.Add(time.Minute * time.Duration(expireMinutes)).Unix(),
 			IssuedAt:  now.Unix(),
-			Issuer:    "harbormaster",
+			Issuer:    issuer,
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	ss, err := token.SignedString(jwk)
+	ss, err := token.SignedString(c.JWK)
 	if err != nil {
 		return "", err
 	}
@@ -46,83 +53,61 @@ func New(jwk []byte, audience string, admin bool, ttl int) (string, error) {
 	return ss, nil
 }
 
-func JWTFromHeader(c echo.Context, header string, authScheme string) (string, error) {
-	auth := c.Request().Header.Get(header)
-	l := len(authScheme)
-
-	if len(auth) > l+1 && auth[:l] == authScheme {
-		return auth[l+1:], nil
-	}
-
-	return "", fmt.Errorf("Missing or invalid jwt in the request header")
-}
-
-func GetSigningKey() ([]byte, error) {
-	s, err := storage.NewDriver("sqlite", config.AppPath)
-	if err != nil {
-		e := errors.New(errors.DatabaseError, errors.ReadFailed)
-
-		return []byte(""), fmt.Errorf(e.Message)
-	}
-	defer s.End()
-
-	return []byte(s.GetConfig("jwk")[0].Value), nil
-}
-
-func GetToken(tokenString string) (*jwt.Token, error) {
+func (c *Config) GetToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		jwk, err := GetSigningKey()
-		if err != nil {
-			return "", err
-		}
+//		if _, ok := token.Method.(*jwt.SigningMethodHS256); !ok {
+//			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+//		}
 
-		return jwk, nil
+		return c.JWK, nil
 	})
 
-	if err != nil {
-		return &jwt.Token{}, fmt.Errorf("Token not valid")
+	if c.ValidSignature {
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return token, nil
 }
 
-func GetStandardClaims(tokenString string) (jwt.StandardClaims, error) {
-	token, err := GetToken(tokenString)
+func (c *Config) GetStandardClaims(tokenString string) (jwt.StandardClaims, error) {
+	token, err := c.GetToken(tokenString)
 	if err != nil {
 		return jwt.StandardClaims{}, err
 	}
 
 	claims := token.Claims.(jwt.MapClaims)
 
-	c := jwt.StandardClaims{}
+	cl := jwt.StandardClaims{}
 
 	if v, ok := claims["aud"]; ok {
-		c.Audience = v.(string)
+		cl.Audience = v.(string)
 	}
 	if v, ok := claims["exp"]; ok {
-		c.ExpiresAt = int64(v.(float64))
+		cl.ExpiresAt = int64(v.(float64))
 	}
 	if v, ok := claims["jti"]; ok {
-		c.Id = v.(string)
+		cl.Id = v.(string)
 	}
 	if v, ok := claims["iat"]; ok {
-		c.IssuedAt = int64(v.(float64))
+		cl.IssuedAt = int64(v.(float64))
 	}
 	if v, ok := claims["iss"]; ok {
-		c.Issuer = v.(string)
+		cl.Issuer = v.(string)
 	}
 	if v, ok := claims["nbf"]; ok {
-		c.NotBefore = int64(v.(float64))
+		cl.NotBefore = int64(v.(float64))
 	}
 	if v, ok := claims["sub"]; ok {
-		c.Subject = v.(string)
+		cl.Subject = v.(string)
 	}
 
-	return c, nil
+	return cl, nil
 }
 
-func GetCustomClaims(tokenString string) (MyCustomClaims, error) {
-	token, err := GetToken(tokenString)
+func (c *Config) GetCustomClaims(tokenString string) (MyCustomClaims, error) {
+	token, err := c.GetToken(tokenString)
 	if err != nil {
 		return MyCustomClaims{}, err
 	}
@@ -134,12 +119,12 @@ func GetCustomClaims(tokenString string) (MyCustomClaims, error) {
 		admin = v.(bool)
 	}
 
-	stdclaims, err := GetStandardClaims(tokenString)
+	stdclaims, err := c.GetStandardClaims(tokenString)
 	if err != nil {
 		return MyCustomClaims{}, err
 	}
 
-	c := MyCustomClaims{admin, stdclaims}
+	mcc := MyCustomClaims{admin, stdclaims}
 
-	return c, nil
+	return mcc, nil
 }

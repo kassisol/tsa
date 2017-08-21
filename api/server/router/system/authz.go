@@ -6,6 +6,7 @@ import (
 
 	"github.com/juliengk/stack/jsonapi"
 	"github.com/kassisol/tsa/api/errors"
+	"github.com/kassisol/tsa/api/server/httputils"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/kassisol/tsa/pkg/token"
 	"github.com/labstack/echo"
@@ -19,7 +20,7 @@ func AuthzHandle(c echo.Context) error {
 	ttl, _ := strconv.Atoi(qTtl)
 
 	// Create the Claims
-	jwk, err := token.GetSigningKey()
+	jwk, err := httputils.GetTokenSigningKey()
 	if err != nil {
 		e := errors.New(errors.DatabaseError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
@@ -27,7 +28,9 @@ func AuthzHandle(c echo.Context) error {
 		return api.JSON(c, http.StatusInternalServerError, r)
 	}
 
-	ss, err := token.New(jwk, username, admin, ttl)
+	t := token.New(jwk, true)
+
+	ss, err := t.Create(username, "harbormaster", admin, ttl)
 	if err != nil {
 		e := errors.New(errors.DatabaseError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
