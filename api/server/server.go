@@ -2,7 +2,6 @@ package server
 
 import (
 	log "github.com/Sirupsen/logrus"
-	"github.com/kassisol/tsa/api/server/httputils"
 	mw "github.com/kassisol/tsa/api/server/middleware"
 	"github.com/kassisol/tsa/api/server/router/acme"
 	"github.com/kassisol/tsa/api/server/router/ca"
@@ -39,7 +38,7 @@ func API(addr string, tls bool) {
 	e.GET("/", system.IndexHandle)
 
 	// Authz
-	h := middleware.BasicAuth(httputils.Authorization)(system.AuthzHandle)
+	h := middleware.BasicAuth(mw.Authorization)(system.AuthzHandle)
 	e.GET("/new-authz", h)
 
 	// CA public certificate

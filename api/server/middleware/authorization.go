@@ -1,19 +1,24 @@
-package httputils
+package middleware
 
 import (
 	log "github.com/Sirupsen/logrus"
 	pass "github.com/juliengk/go-utils/password"
 	"github.com/kassisol/tsa/api/auth"
 	"github.com/kassisol/tsa/api/auth/driver"
-	"github.com/kassisol/tsa/api/config"
 	"github.com/kassisol/tsa/api/storage"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/labstack/echo"
 )
 
 func Authorization(username, password string, c echo.Context) (bool, error) {
 	var loginStatus driver.LoginStatus
 
-	s, err := storage.NewDriver("sqlite", config.AppPath)
+	cfg := adf.NewDaemon()
+	if err := cfg.Init(); err != nil {
+		return false, err
+	}
+
+	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
 	if err != nil {
 		log.Fatal(err)
 	}
