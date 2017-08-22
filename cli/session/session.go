@@ -169,7 +169,7 @@ func (c *Config) Status() string {
 
 	expiresAt := c.GetExpire(session.Token)
 
-	return fmt.Sprintf("Active server is %s and the session expires at %s", session.Server, expiresAt.String())
+	return fmt.Sprintf("Active server is %s and the session expires at %s", session.Server.Name, expiresAt.String())
 }
 
 func (c *Config) GetExpire(jwt string) time.Time {
