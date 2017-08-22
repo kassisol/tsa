@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
@@ -51,4 +52,44 @@ func (c *Config) GetInfo(token string) (*types.SystemInfo, error) {
 	}
 
 	return &info, nil
+}
+
+func (c *Config) AdminChangePassword(pold, pnew, pconfirm string) error {
+	cc := &client.Config{
+		Scheme: c.URL.Scheme,
+		Host:   c.URL.Host,
+		Port:   c.URL.Port,
+		Path:   "/system/admin/password",
+	}
+
+	req, err := client.New(cc)
+	if err != nil {
+		return err
+	}
+
+	req.HeaderAdd("Content-Type", "application/json")
+
+	p := types.ChangePassword{
+		Old:     pold,
+		New:     pnew,
+		Confirm: pconfirm,
+	}
+
+	data, err := json.Marshal(p)
+	if err != nil {
+		return err
+	}
+
+	result := req.Put(bytes.NewBuffer(data))
+
+	var response jsonapi.Response
+	if err := json.Unmarshal(result.Body, &response); err != nil {
+		return err
+	}
+
+	if result.Response.StatusCode != 200 {
+		return fmt.Errorf(response.Errors.Message)
+	}
+
+	return nil
 }
