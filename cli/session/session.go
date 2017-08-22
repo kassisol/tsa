@@ -179,6 +179,19 @@ func (c *Config) GetExpire(jwt string) time.Time {
 	return time.Unix(claims.ExpiresAt, 0)
 }
 
+func (c *Config) GetServer(server string) (driver.ServerResult, error) {
+	filter := map[string]string{
+		"name": server,
+	}
+	srv := c.storage.ListServers(filter)
+
+	if len(srv) == 0 {
+		return driver.ServerResult{}, fmt.Errorf("Server name '%s' does not exist", server)
+	}
+
+	return srv[0], nil
+}
+
 func (c *Config) getActive() driver.SessionResult {
 	filter := map[string]string{
 		"active": "1",
