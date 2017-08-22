@@ -61,3 +61,9 @@ type API struct {
 type Auth struct {
 	Type string `json:"type"`
 }
+
+type ChangePassword struct {
+	Old     string `json:"old"`
+	New     string `json:"new"`
+	Confirm string `json:"confirm"`
+}
