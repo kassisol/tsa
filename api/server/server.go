@@ -49,6 +49,7 @@ func API(addr string, tls bool) {
 
 	sys := e.Group("/system")
 	sys.Use(middleware.JWTWithConfig(jwtConfig))
+	sys.Use(mw.AdminOnly())
 
 	sys.GET("/info", system.InfoHandle)
 
