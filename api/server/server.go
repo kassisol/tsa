@@ -41,6 +41,12 @@ func API(addr string, tls bool) {
 	h := middleware.BasicAuth(mw.Authorization)(system.AuthzHandle)
 	e.GET("/new-authz", h)
 
+	// System
+	c := e.Group("/system")
+	c.Use(middleware.JWT(jwk))
+
+	c.GET("/info", system.InfoHandle)
+
 	// CA public certificate
 	e.GET("/ca", ca.PubCertHandle)
 

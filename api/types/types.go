@@ -21,3 +21,43 @@ type ServerConfig struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
+
+type SystemInfo struct {
+	CA               CertificationAuthority `json:"certification_authority"`
+	CertificateStats CertificateStats       `json:"certificate_stats"`
+	API              API                    `json:"api"`
+	Auth             Auth                   `json:"auth"`
+	ServerVersion    string                 `json:"server_version"`
+	StorageDriver    string                 `json:"storage_driver"`
+	LoggingDriver    string                 `json:"logging_driver"`
+	TSARootDir       string                 `json:"tsa_root_dir"`
+}
+
+type CertificationAuthority struct {
+	Type               string `json:"type"`
+	Expire             string `json:"expire"`
+	Country            string `json:"country"`
+	State              string `json:"state"`
+	Locality           string `json:"locality"`
+	Organization       string `json:"organization"`
+	OrganizationalUnit string `json:"organizatinal_unit"`
+	CommonName         string `json:"common_name"`
+	Email              string `json:"email"`
+}
+
+type CertificateStats struct {
+	Certificate int `json:"certificate"`
+	Valid       int `json:"valid"`
+	Expired     int `json:"expired"`
+	Revoked     int `json:"revoked"`
+}
+
+type API struct {
+	FQDN        string `json:"fqdn"`
+	BindAddress string `json:"bind_address"`
+	BindPort    string `json:"bind_port"`
+}
+
+type Auth struct {
+	Type string `json:"type"`
+}
