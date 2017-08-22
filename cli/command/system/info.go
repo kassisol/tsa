@@ -5,12 +5,9 @@ import (
 	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/juliengk/go-cert/ca/database"
-	"github.com/juliengk/go-cert/helpers"
-	"github.com/juliengk/go-cert/pkix"
-	"github.com/kassisol/tsa/api/storage"
-	"github.com/kassisol/tsa/pkg/adf"
-	"github.com/kassisol/tsa/version"
+	"github.com/kassisol/tsa/api/types"
+	"github.com/kassisol/tsa/cli/session"
+	"github.com/kassisol/tsa/client"
 	"github.com/spf13/cobra"
 )
 
@@ -31,58 +28,55 @@ func runInfo(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	cfg := adf.NewDaemon()
-	if err := cfg.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
+	sess, err := session.New()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer s.End()
+	defer sess.End()
 
-	if len(s.ListConfigs("ca")) > 0 {
-		db, err := database.NewBackend("sqlite", cfg.CA.Dir.Root)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer db.End()
+	srv, err := sess.Get()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		expire := "0000-00-00"
+	clt, err := client.New(srv.Server.TSAURL)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		certificate, err := pkix.NewCertificateFromPEMFile(cfg.CA.TLS.CrtFile)
-		if err == nil {
-			expire = helpers.ExpireDateString(certificate.Crt.NotAfter)
-		}
+	info, err := clt.GetInfo(srv.Token)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	if info.CA != (types.CertificationAuthority{}) {
 		fmt.Println("Certificate Authority:")
-		fmt.Println(" Type:", s.GetConfig("ca_type")[0].Value)
-		fmt.Println(" Expire:", expire)
-		fmt.Println(" Country:", s.GetConfig("ca_country")[0].Value)
-		fmt.Println(" State:", s.GetConfig("ca_state")[0].Value)
-		fmt.Println(" Locality:", s.GetConfig("ca_locality")[0].Value)
-		fmt.Println(" Organization:", s.GetConfig("ca_org")[0].Value)
-		fmt.Println(" Organizational Unit:", s.GetConfig("ca_ou")[0].Value)
-		fmt.Println(" Common Name:", s.GetConfig("ca_cn")[0].Value)
-		fmt.Println(" E-mail:", s.GetConfig("ca_email")[0].Value)
-		fmt.Println("Certificates:", db.Count("A"))
-		fmt.Println(" Valid:", db.Count("V"))
-		fmt.Println(" Expired:", db.Count("E"))
-		fmt.Println(" Revoked:", db.Count("R"))
+		fmt.Println(" Type:", info.CA.Type)
+		fmt.Println(" Expire:", info.CA.Expire)
+		fmt.Println(" Country:", info.CA.Country)
+		fmt.Println(" State:", info.CA.State)
+		fmt.Println(" Locality:", info.CA.Locality)
+		fmt.Println(" Organization:", info.CA.Organization)
+		fmt.Println(" Organizational Unit:", info.CA.OrganizationalUnit)
+		fmt.Println(" Common Name:", info.CA.CommonName)
+		fmt.Println(" E-mail:", info.CA.Email)
+		fmt.Println("Certificates:", info.CertificateStats.Certificate)
+		fmt.Println(" Valid:", info.CertificateStats.Valid)
+		fmt.Println(" Expired:", info.CertificateStats.Expired)
+		fmt.Println(" Revoked:", info.CertificateStats.Revoked)
 	}
 
 	fmt.Println("API:")
-	fmt.Println(" FQDN:", s.GetConfig("api_fqdn")[0].Value)
-	fmt.Println(" Bind Address:", s.GetConfig("api_bind")[0].Value)
-	fmt.Println(" Bind Port:", s.GetConfig("api_port")[0].Value)
+	fmt.Println(" FQDN:", info.API.FQDN)
+	fmt.Println(" Bind Address:", info.API.BindAddress)
+	fmt.Println(" Bind Port:", info.API.BindPort)
 
-	fmt.Println("Auth Type:", s.GetConfig("auth_type")[0].Value)
+	fmt.Println("Auth Type:", info.Auth.Type)
 
-	fmt.Println("Server Version:", version.Version)
-	fmt.Println("Storage Driver: sqlite")
-	fmt.Println("Logging Driver: standard")
-	fmt.Println("TSA Root Dir:", cfg.App.Dir.Root)
+	fmt.Println("Server Version:", info.ServerVersion)
+	fmt.Println("Storage Driver:", info.StorageDriver)
+	fmt.Println("Logging Driver:", info.LoggingDriver)
+	fmt.Println("TSA Root Dir:", info.TSARootDir)
 }
 
 var infoDescription = `
