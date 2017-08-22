@@ -188,11 +188,9 @@ func (r *Request) Post(data io.Reader) Result {
 	return r.Do("POST", data)
 }
 
-/*
 func (r *Request) Put(data io.Reader) Result {
 	return r.Do("PUT", data)
 }
-*/
 
 func (r *Request) Delete() Result {
 	return r.Do("DELETE", nil)
