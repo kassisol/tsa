@@ -21,7 +21,7 @@ type AdminPasswordConfig struct {
 
 var (
 	DefaultAdminPasswordConfig = AdminPasswordConfig{
-		Skipper: middleware.DefaultSkipper,
+		Skipper: DefaultSkipper,
 	}
 
 	ErrDefaultAdminPasswordSet = errors.New("Default admin password should be changed")

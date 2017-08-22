@@ -42,10 +42,15 @@ func API(addr string, tls bool) {
 	e.GET("/new-authz", h)
 
 	// System
-	c := e.Group("/system")
-	c.Use(middleware.JWT(jwk))
+	jwtConfig := middleware.JWTConfig{
+		Skipper:    mw.DefaultSkipper,
+		SigningKey: jwk,
+	}
 
-	c.GET("/info", system.InfoHandle)
+	sys := e.Group("/system")
+	sys.Use(middleware.JWTWithConfig(jwtConfig))
+
+	sys.GET("/info", system.InfoHandle)
 
 	// CA public certificate
 	e.GET("/ca", ca.PubCertHandle)
