@@ -55,6 +55,12 @@ func API(addr string, tls bool) {
 	sys.PUT("/admin/password", system.AdminChangePasswordHandle)
 	sys.POST("/ca/init", system.CAInitHandle)
 
+	sys.GET("/auth", system.AuthListHandle)
+	sys.POST("/auth", system.AuthCreateHandle)
+	sys.DELETE("/auth/:key", system.AuthDeleteHandle)
+	sys.PUT("/auth/enable/:type", system.AuthEnableHandle)
+	sys.PUT("/auth/disable", system.AuthDisableHandle)
+
 	// CA public certificate
 	e.GET("/ca", ca.PubCertHandle)
 
