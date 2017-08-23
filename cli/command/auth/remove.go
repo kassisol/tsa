@@ -4,8 +4,8 @@ import (
 	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/kassisol/tsa/api/storage"
-	"github.com/kassisol/tsa/pkg/adf"
+	"github.com/kassisol/tsa/cli/session"
+	"github.com/kassisol/tsa/client"
 	"github.com/spf13/cobra"
 )
 
@@ -22,30 +22,34 @@ func newRemoveCommand() *cobra.Command {
 }
 
 func runRemove(cmd *cobra.Command, args []string) {
-	if len(args) < 2 || len(args) > 2 {
+	if len(args) < 1 || len(args) > 2 {
 		cmd.Usage()
 		os.Exit(-1)
 	}
 
-	cfg := adf.NewDaemon()
-	if err := cfg.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
+	sess, err := session.New()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer s.End()
+	defer sess.End()
 
-	key := args[0]
-	value := args[1]
-
-	if len(args[1]) == 0 {
-		value = "ALL"
+	srv, err := sess.Get()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	s.RemoveConfig(key, value)
+	clt, err := client.New(srv.Server.TSAURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(args) == 1 {
+		args = append(args, "")
+	}
+
+	if err := clt.AuthDelete(srv.Token, args[0], args[1]); err != nil {
+		log.Fatal(err)
+	}
 }
 
 var removeDescription = `

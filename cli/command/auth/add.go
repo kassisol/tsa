@@ -4,9 +4,8 @@ import (
 	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/kassisol/tsa/api/auth"
-	"github.com/kassisol/tsa/api/storage"
-	"github.com/kassisol/tsa/pkg/adf"
+	"github.com/kassisol/tsa/cli/session"
+	"github.com/kassisol/tsa/client"
 	"github.com/spf13/cobra"
 )
 
@@ -27,29 +26,23 @@ func runAdd(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	cfg := adf.NewDaemon()
-	if err := cfg.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
+	sess, err := session.New()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer s.End()
+	defer sess.End()
 
-	authType := s.GetConfig("auth_type")[0].Value
-
-	if authType == "none" {
-		log.Fatal("Make sure to enable a backend auth before adding configuration")
-	}
-
-	a, err := auth.NewDriver(authType)
+	srv, err := sess.Get()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err = a.AddConfig(args[0], args[1]); err != nil {
+	clt, err := client.New(srv.Server.TSAURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := clt.AuthCreate(srv.Token, args[0], args[1]); err != nil {
 		log.Fatal(err)
 	}
 }
