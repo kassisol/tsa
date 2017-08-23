@@ -20,7 +20,7 @@ type CAInitConfig struct {
 
 var (
 	DefaultCAInitConfig = CAInitConfig{
-		Skipper: DefaultSkipper,
+		Skipper: DefaultCAInitSkipper,
 	}
 
 	ErrCAInit = errors.New("CA initialization should be done first")

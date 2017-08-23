@@ -35,13 +35,14 @@ type SystemInfo struct {
 
 type CertificationAuthority struct {
 	Type               string `json:"type"`
-	Expire             string `json:"expire"`
+	Duration           int    `json:"duration;omitempty"`
+	Expire             string `json:"expire;omitempty"`
 	Country            string `json:"country"`
 	State              string `json:"state"`
 	Locality           string `json:"locality"`
 	Organization       string `json:"organization"`
 	OrganizationalUnit string `json:"organizatinal_unit"`
-	CommonName         string `json:"common_name"`
+	CommonName         string `json:"common_name;omitempty"`
 	Email              string `json:"email"`
 }
 

@@ -53,6 +53,7 @@ func API(addr string, tls bool) {
 
 	sys.GET("/info", system.InfoHandle)
 	sys.PUT("/admin/password", system.AdminChangePasswordHandle)
+	sys.POST("/ca/init", system.CAInitHandle)
 
 	// CA public certificate
 	e.GET("/ca", ca.PubCertHandle)
