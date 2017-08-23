@@ -1,23 +1,18 @@
 package system
 
 import (
+	"fmt"
 	"os"
-	"strconv"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/juliengk/go-cert/ca"
-	"github.com/juliengk/go-cert/helpers"
-	"github.com/juliengk/go-cert/pkix"
 	"github.com/juliengk/go-utils/readinput"
-	"github.com/juliengk/go-utils/validation"
-	"github.com/kassisol/tsa/api/storage"
-	clivalidation "github.com/kassisol/tsa/cli/validation"
-	"github.com/kassisol/tsa/pkg/adf"
+	"github.com/kassisol/tsa/cli/session"
+	"github.com/kassisol/tsa/client"
 	"github.com/spf13/cobra"
 )
 
 var (
-	serverDuration string
+	serverDuration int
 	serverCountry  string
 	serverState    string
 	serverLocality string
@@ -35,7 +30,7 @@ func NewInitCommand() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	flags.StringVarP(&serverDuration, "duration", "", "120", "Duration")
+	flags.IntVarP(&serverDuration, "duration", "", 120, "Duration")
 	flags.StringVarP(&serverCountry, "country", "", "", "Country")
 	flags.StringVarP(&serverState, "state", "", "", "State")
 	flags.StringVarP(&serverLocality, "city", "", "", "Locality")
@@ -48,7 +43,7 @@ func NewInitCommand() *cobra.Command {
 
 func runInit(cmd *cobra.Command, args []string) {
 	var catype string
-	var duration string
+	var duration int
 	var country string
 	var state string
 	var locality string
@@ -61,46 +56,19 @@ func runInit(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	cfg := adf.NewDaemon()
-	if err := cfg.Init(); err != nil {
+	sess, err := session.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sess.End()
+
+	srv, err := sess.Get()
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
-	if err != nil {
-		panic(err)
-	}
-	defer s.End()
-
-	if len(s.ListConfigs("ca")) > 0 {
-		log.Fatal("Initialization already done")
-	}
-
-	defer func() {
-		if r := recover(); r != nil {
-			os.RemoveAll(cfg.CA.Dir.Root)
-
-			s.RemoveConfig("ca_type", "ALL")
-			s.RemoveConfig("ca_duration", "ALL")
-			s.RemoveConfig("ca_country", "ALL")
-			s.RemoveConfig("ca_state", "ALL")
-			s.RemoveConfig("ca_locality", "ALL")
-			s.RemoveConfig("ca_org", "ALL")
-			s.RemoveConfig("ca_ou", "ALL")
-			s.RemoveConfig("ca_cn", "ALL")
-			s.RemoveConfig("ca_email", "ALL")
-
-			log.Fatal(r)
-		}
-	}()
-
 	catype = "root"
-
-	if len(serverDuration) <= 0 {
-		duration = readinput.ReadInput("Duration")
-	} else {
-		duration = serverDuration
-	}
+	duration = serverDuration
 
 	if len(serverCountry) <= 0 {
 		country = readinput.ReadInput("Country")
@@ -138,63 +106,16 @@ func runInit(cmd *cobra.Command, args []string) {
 		email = serverEmail
 	}
 
-	// Input validations
-	// IV - CA Type
-	if err := clivalidation.IsValidCAType(catype); err != nil {
-		panic(err)
-	}
-
-	// IV - Organizational Unit
-	if err := helpers.IsValidCAOrgUnit(ou); err != nil {
-		panic(err)
-	}
-
-	// IV - E-mail
-	if err := validation.IsValidEmail(email); err != nil {
-		panic(err)
-	}
-
-	// Save inputs to DB
-	s.AddConfig("ca_type", catype)
-	s.AddConfig("ca_duration", duration)
-
-	caou := helpers.UpdateOrgUnitLabel(ou)
-	cacn := helpers.UpdateCommonNameLabel("root", ou)
-
-	s.AddConfig("ca_country", country)
-	s.AddConfig("ca_state", state)
-	s.AddConfig("ca_locality", locality)
-	s.AddConfig("ca_org", o)
-	s.AddConfig("ca_ou", caou)
-	s.AddConfig("ca_cn", cacn)
-	s.AddConfig("ca_email", email)
-
-	// Initialize CA
-	caSubject := pkix.NewSubject(country, state, locality, o, caou, cacn)
-
-	caNDN := pkix.NewDNSNames()
-
-	caNE := pkix.NewEmails()
-	caNE.AddEmail(email)
-
-	caIP := pkix.NewIPs()
-
-	caAltnames := pkix.NewSubjectAltNames(*caNDN, *caNE, *caIP)
-
-	d, _ := strconv.Atoi(duration)
-	caDate := ca.CreateDate(d)
-	caSN := 1
-
-	caTemplate, err := ca.CreateTemplate(true, caSubject, caAltnames, caDate, caSN, "")
+	clt, err := client.New(srv.Server.TSAURL)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	if _, err = ca.InitCA(cfg.App.Dir.Root, caTemplate); err != nil {
-		panic(err)
+	if err := clt.CAInit(srv.Token, catype, country, state, locality, o, ou, email, duration); err != nil {
+		log.Fatal(err)
 	}
 
-	ca.CreateCRLFile(cfg.CA.CRLFile)
+	fmt.Println("Initialization done successfully")
 }
 
 var initDescription = `
