@@ -40,7 +40,15 @@ func (c *Config) GetDirectory() error {
 		return fmt.Errorf(response.Errors.Message)
 	}
 
-	directory := GetDirectory(response.Data)
+	r, err := json.Marshal(response.Data)
+	if err != nil {
+		return err
+	}
+
+	var directory types.Directory
+	if err := json.Unmarshal(r, &directory); err != nil {
+		return err
+	}
 
 	if directory == (types.Directory{}) {
 		return fmt.Errorf("Empty Directory")
