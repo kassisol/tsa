@@ -61,6 +61,9 @@ func API(addr string, tls bool) {
 	sys.PUT("/auth/enable/:type", system.AuthEnableHandle)
 	sys.PUT("/auth/disable", system.AuthDisableHandle)
 
+	sys.GET("/cert", system.CertListHandle)
+	sys.DELETE("/cert/revoke/:serialnumber", system.CertRevokeHandle)
+
 	// CA public certificate
 	e.GET("/ca", ca.PubCertHandle)
 
