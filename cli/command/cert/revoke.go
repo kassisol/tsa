@@ -3,14 +3,11 @@ package cert
 import (
 	"os"
 	"strconv"
-	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/juliengk/go-cert/ca"
-	"github.com/juliengk/go-cert/ca/database"
-	"github.com/kassisol/tsa/pkg/adf"
+	"github.com/kassisol/tsa/cli/session"
+	"github.com/kassisol/tsa/client"
 	"github.com/spf13/cobra"
-	"golang.org/x/crypto/ocsp"
 )
 
 func newRevokeCommand() *cobra.Command {
@@ -30,8 +27,19 @@ func runRevoke(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	cfg := adf.NewDaemon()
-	if err := cfg.Init(); err != nil {
+	sess, err := session.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sess.End()
+
+	srv, err := sess.Get()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	clt, err := client.New(srv.Server.TSAURL)
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -40,17 +48,9 @@ func runRevoke(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	db, err := database.NewBackend("sqlite", cfg.CA.Dir.Root)
-	if err != nil {
+	if err := clt.CertRevoke(srv.Token, serialNumber); err != nil {
 		log.Fatal(err)
 	}
-	defer db.End()
-
-	// Revoke certificate
-	revocationDate := ca.DatabaseDateTimeFormat(time.Now())
-	revocationReason := ocsp.CessationOfOperation
-
-	db.Revoke(serialNumber, revocationDate, revocationReason)
 }
 
 var revokeDescription = `

@@ -6,9 +6,9 @@ import (
 	"text/tabwriter"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/juliengk/go-cert/ca/database"
 	"github.com/juliengk/go-utils"
-	"github.com/kassisol/tsa/pkg/adf"
+	"github.com/kassisol/tsa/cli/session"
+	"github.com/kassisol/tsa/client"
 	"github.com/spf13/cobra"
 )
 
@@ -35,20 +35,28 @@ func runList(cmd *cobra.Command, args []string) {
 		os.Exit(-1)
 	}
 
-	cfg := adf.NewDaemon()
-	if err := cfg.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	db, err := database.NewBackend("sqlite", cfg.CA.Dir.Root)
+	sess, err := session.New()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.End()
+	defer sess.End()
+
+	srv, err := sess.Get()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	clt, err := client.New(srv.Server.TSAURL)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	filters := utils.ConvertSliceToMap("=", certListFilter)
 
-	certificates := db.List(filters)
+	certificates, err := clt.CertList(srv.Token, filters)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if len(certificates) > 0 {
 		tw := tabwriter.NewWriter(os.Stdout, 20, 1, 2, ' ', 0)
