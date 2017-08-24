@@ -43,7 +43,7 @@ func runList(cmd *cobra.Command, args []string) {
 		for _, s := range sessions {
 			expire := sess.GetExpire(s.Token)
 
-			fmt.Fprintf(w, "%d\t%t\t%s\t%s\n", s.ID, s.Active, s.Server, expire.String())
+			fmt.Fprintf(w, "%d\t%t\t%s\t%s\n", s.ID, s.Active, s.Server.Name, expire.String())
 		}
 
 		w.Flush()
