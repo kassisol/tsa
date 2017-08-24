@@ -98,7 +98,7 @@ func (c *Config) Count(status string) int {
 func (c *Config) Exists(dn string) bool {
 	var count int64
 
-	c.DB.Table("certificates").Where("status_flag = 'V'").Where("dn = ?", dn).Count(&count)
+	c.DB.Table("certificates").Where("status_flag = 'V'").Where("distinguished_name = ?", dn).Count(&count)
 
 	if count > 0 {
 		return true

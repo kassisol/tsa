@@ -60,23 +60,23 @@ func CreateCSR(country, state, locality, org, ou, cn, email string, altnames []s
 	return csr, nil
 }
 
-func CreateCrt(crt []byte, crtFile string) error {
+func CreateCrt(crt []byte, crtFile string) (*pkix.Certificate ,error) {
 	certificate, err := pkix.NewCertificateFromDER(crt)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	crtBytes, err := certificate.ToPEM()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = pkix.ToPEMFile(crtFile, crtBytes, 0444)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return certificate, nil
 }
 
 func CreateSelfSignedCertificate(keyFile, crtFile string, bits int, subject cpkix.Name, altnames pkix.AltNames, date ca.CertDate) error {
@@ -97,7 +97,7 @@ func CreateSelfSignedCertificate(keyFile, crtFile string, bits int, subject cpki
 		return err
 	}
 
-	if err := CreateCrt(derBytes, crtFile); err != nil {
+	if _, err := CreateCrt(derBytes, crtFile); err != nil {
 		return err
 	}
 

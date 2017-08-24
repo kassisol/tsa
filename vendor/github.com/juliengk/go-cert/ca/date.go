@@ -12,7 +12,7 @@ type CertDate struct {
 }
 
 func CreateDate(month int) CertDate {
-	now := time.Now()
+	now := time.Now().UTC()
 
 	return CertDate{
 		Now:    now,
@@ -31,7 +31,7 @@ func (cd *CertDate) ExpireDateString() string {
 func ExpireDiffDays(notafter time.Time) int {
 	days := 1
 
-	now := time.Now()
+	now := time.Now().UTC()
 	diff := notafter.Sub(now)
 
 	hours := int(diff.Hours())
