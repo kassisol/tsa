@@ -21,6 +21,8 @@ import (
 	"github.com/labstack/echo"
 )
 
+var ErrCountryCodeLength = fmt.Errorf("Country should be a 2 letters code")
+
 func CAInitHandle(c echo.Context) error {
 	cfg := adf.NewDaemon()
 	if err := cfg.Init(); err != nil {
@@ -78,6 +80,18 @@ func CAInitHandle(c echo.Context) error {
 	// DV - CA Type
 	if err := valid.IsValidCAType(ci.Type); err != nil {
 		panic(err)
+	}
+
+	// DV - Country
+	if len(ci.Country) != 2 {
+		panic(ErrCountryCodeLength)
+	}
+
+	for _, c := range ci.Country {
+		if err := validation.IsUpper(string(c)); err != nil {
+			cErr := fmt.Errorf("Country: %v", err)
+			panic(cErr)
+		}
 	}
 
 	// DV - Organizational Unit
