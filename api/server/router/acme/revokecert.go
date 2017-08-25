@@ -34,15 +34,6 @@ func RevokeCertHandle(c echo.Context) error {
 	}
 	defer db.End()
 
-	// Get POST data
-	revokecert := new(types.RevokeCert)
-
-	if err := c.Bind(revokecert); err != nil {
-		r := jsonapi.NewErrorResponse(11000, "Internal error")
-
-		return api.JSON(c, http.StatusInternalServerError, r)
-	}
-
 	// Get JWT Claims
 	authHeader := c.Request().Header.Get("Authorization")
 	jwt, _ := token.JWTFromHeader(authHeader, "Bearer")
@@ -54,6 +45,15 @@ func RevokeCertHandle(c echo.Context) error {
 
 	t := token.New(jwk, true)
 	claims, _ := t.GetCustomClaims(jwt)
+
+	// Get POST data
+	revokecert := new(types.RevokeCert)
+
+	if err := c.Bind(revokecert); err != nil {
+		r := jsonapi.NewErrorResponse(1000, "Cannot unmarshal JSON")
+
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
+	}
 
 	// Validate
 	rcert := db.List(map[string]string{"serial": strconv.Itoa(revokecert.SerialNumber)})[0]

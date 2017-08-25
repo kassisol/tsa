@@ -60,7 +60,7 @@ func AuthCreateHandle(c echo.Context) error {
 	if err := c.Bind(config); err != nil {
 		r := jsonapi.NewErrorResponse(1000, "Cannot unmarshal JSON")
 
-		return api.JSON(c, http.StatusInternalServerError, r)
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
 	}
 
 	authType := s.GetConfig("auth_type")[0].Value
@@ -68,20 +68,20 @@ func AuthCreateHandle(c echo.Context) error {
 	if authType == "none" {
 		r := jsonapi.NewErrorResponse(1000, "Make sure to enable a backend auth before adding configuration")
 
-		return api.JSON(c, http.StatusInternalServerError, r)
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
 	}
 
 	a, err := auth.NewDriver(authType)
 	if err != nil {
 		r := jsonapi.NewErrorResponse(1000, err.Error())
 
-		return api.JSON(c, http.StatusInternalServerError, r)
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
 	}
 
 	if err = a.AddConfig(config.Key, config.Value); err != nil {
 		r := jsonapi.NewErrorResponse(1000, err.Error())
 
-		return api.JSON(c, http.StatusInternalServerError, r)
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
 	}
 
 	response := jsonapi.NewSuccessResponse(config)

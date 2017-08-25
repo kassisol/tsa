@@ -47,17 +47,6 @@ func NewCertHandle(c echo.Context) error {
 	}
 	defer s.End()
 
-	// Get POST data
-	newcert := new(types.NewCert)
-
-	if err := c.Bind(newcert); err != nil {
-		log.Info(err)
-		e := errors.New(errors.CSRError, errors.ReadFailed)
-		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
-
-		return api.JSON(c, http.StatusInternalServerError, r)
-	}
-
 	// Get JWT Claims
 	authHeader := c.Request().Header.Get("Authorization")
 	jwt, _ := token.JWTFromHeader(authHeader, "Bearer")
@@ -70,13 +59,24 @@ func NewCertHandle(c echo.Context) error {
 	t := token.New(jwk, true)
 	claims, _ := t.GetCustomClaims(jwt)
 
+	// Get POST data
+	newcert := new(types.NewCert)
+
+	if err := c.Bind(newcert); err != nil {
+		log.Info(err)
+		e := errors.New(errors.CSRError, errors.ReadFailed)
+		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
+
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
+	}
+
 	// Read CSR
 	csr, err := pkix.NewCertificateRequestFromDER(newcert.CSR)
 	if err != nil {
 		e := errors.New(errors.CSRError, errors.ParseFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
 
-		return api.JSON(c, http.StatusInternalServerError, r)
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
 	}
 
 	// Validate Common Name for client

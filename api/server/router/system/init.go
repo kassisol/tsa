@@ -36,7 +36,7 @@ func CAInitHandle(c echo.Context) error {
 		e := errors.New(apierr.DatabaseError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
 
-		return api.JSON(c, http.StatusInternalServerError, r)
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
 	}
 	defer s.End()
 
@@ -63,7 +63,7 @@ func CAInitHandle(c echo.Context) error {
 			err := fmt.Sprintf("%s", r)
 			res := jsonapi.NewErrorResponse(1000, err)
 
-			api.JSON(c, http.StatusInternalServerError, res)
+			api.JSON(c, http.StatusUnprocessableEntity, res)
 		}
 	}()
 

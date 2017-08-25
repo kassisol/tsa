@@ -6,8 +6,8 @@ import (
 	"github.com/juliengk/go-utils/password"
 	"github.com/juliengk/stack/jsonapi"
 	apierr "github.com/kassisol/tsa/api/errors"
-	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/api/storage"
+	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/labstack/echo"
@@ -36,7 +36,7 @@ func AdminChangePasswordHandle(c echo.Context) error {
 	if err := c.Bind(p); err != nil {
 		r := jsonapi.NewErrorResponse(1000, "Cannot unmarshal JSON")
 
-		return api.JSON(c, http.StatusInternalServerError, r)
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
 	}
 
 	// Validation
@@ -63,7 +63,6 @@ func AdminChangePasswordHandle(c echo.Context) error {
 
 		return api.JSON(c, http.StatusUnprocessableEntity, r)
 	}
-
 
 	s.RemoveConfig("admin_password", "ALL")
 	s.AddConfig("admin_password", password.GeneratePassword(p.New))

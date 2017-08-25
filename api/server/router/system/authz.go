@@ -17,7 +17,12 @@ func AuthzHandle(c echo.Context) error {
 	admin := c.Get("admin").(bool)
 
 	qTtl := c.QueryParam("ttl")
-	ttl, _ := strconv.Atoi(qTtl)
+	ttl, err := strconv.Atoi(qTtl)
+	if err != nil {
+		r := jsonapi.NewErrorResponse(1000, err.Error())
+
+		return api.JSON(c, http.StatusUnprocessableEntity, r)
+	}
 
 	// Create the Claims
 	jwk, err := httputils.GetTokenSigningKey()
