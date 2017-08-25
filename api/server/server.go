@@ -41,6 +41,9 @@ func API(addr string, tls bool) {
 	h := middleware.BasicAuth(mw.Authorization)(system.AuthzHandle)
 	e.GET("/new-authz", h)
 
+	// Version
+	e.GET("/version", system.ServerVersionHandle)
+
 	// System
 	jwtConfig := middleware.JWTConfig{
 		Skipper:    mw.DefaultSkipper,
