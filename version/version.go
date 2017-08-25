@@ -9,18 +9,29 @@ import (
 )
 
 var (
-	Version   string
-	GitCommit string
-	GitState  string
-	BuildDate string
+	Version   = "unknown-version"
+	GitCommit = "unknown-commit"
+	GitState  = "unknown-state"
+	BuildDate = "unknown-builddate"
 )
 
-var versionTemplate = `Version:     {{.Version}}
-Git commit:  {{.GitCommit}}{{if eq .GitState "dirty"}}
-Git State:   {{.GitState}}{{end}}
-Built:       {{.BuildDate}}
-Go version:  {{.GoVersion}}
-OS/Arch:     {{.Os}}/{{.Arch}}
+var versionTemplate = `Client:
+ Version:    {{.Client.Version}}
+ Git commit: {{.Client.GitCommit}}{{if eq .Client.GitState "dirty"}}
+ Git State:  {{.Client.GitState}}{{end}}
+ Built:      {{.Client.BuildDate}}
+ Go version: {{.Client.GoVersion}}
+ OS/Arch:    {{.Client.OS}}/{{.Client.Arch}}{{$len := len .ServerError}}{{if eq $len 0}}
+
+Server:
+ Version:    {{.Server.Version}}
+ Git commit: {{.Server.GitCommit}}{{if eq .Server.GitState "dirty"}}
+ Git State:  {{.Server.GitState}}{{end}}
+ Built:      {{.Server.BuildDate}}
+ Go version: {{.Server.GoVersion}}
+ OS/Arch:    {{.Server.OS}}/{{.Server.Arch}}{{end}}{{if gt $len 0}}
+
+{{.ServerError}}{{end}}
 `
 
 type VersionInfo struct {
@@ -29,8 +40,14 @@ type VersionInfo struct {
 	GitCommit string
 	GitState  string
 	BuildDate string
-	Os        string
+	OS        string
 	Arch      string
+}
+
+type VersionDisplay struct {
+	ServerError string
+	Client      *VersionInfo
+	Server      *VersionInfo
 }
 
 func New() *VersionInfo {
@@ -47,18 +64,32 @@ func New() *VersionInfo {
 		GitCommit: GitCommit,
 		GitState:  GitState,
 		BuildDate: tu.String(),
-		Os:        runtime.GOOS,
+		OS:        runtime.GOOS,
 		Arch:      runtime.GOARCH,
 	}
 }
 
-func (i *VersionInfo) ShowVersion() {
+func NewDisplay(server *VersionInfo, err string) *VersionDisplay {
+	display := new(VersionDisplay)
+
+	// Get client version
+	client := New()
+	display.Client = client
+
+	// Get server version
+	display.ServerError = err
+	display.Server = server
+
+	return display
+}
+
+func (v *VersionDisplay) Show() {
 	tmpl, err := template.New("version").Parse(versionTemplate)
 	if err != nil {
 		panic(err)
 	}
 
-	if err := tmpl.Execute(os.Stdout, i); err != nil {
+	if err := tmpl.Execute(os.Stdout, v); err != nil {
 		panic(err)
 	}
 }
