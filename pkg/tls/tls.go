@@ -62,7 +62,7 @@ func (c *Config) CreateSelfSignedCertificate(cn string, duration int) error {
 		return err
 	}
 
-	subject := pkix.NewSubject("", "", "", "", "", cn)
+	subject := pkix.NewSubject("CA", "Quebec", "Montreal", "Harbormaster", "TSA", cn)
 
 	ndn := pkix.NewDNSNames()
 	ne := pkix.NewEmails()
