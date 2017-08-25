@@ -3,7 +3,10 @@ set -e
 
 CGO_ENABLED=0
 
-OUTPUT=${OUTPUT:-bin/tsa}
+BUILD_DIR=${BUILD_DIR:-bin}
+BUILD_BIN=${1:-tsa}
+
+OUTPUT=${OUTPUT:-${BUILD_DIR}/${BUILD_BIN}}
 
 source $(dirname $0)/version
 
@@ -17,6 +20,7 @@ CONST="-X github.com/kassisol/tsa/version.Version=${VERSION} -X github.com/kassi
 LDFLAGS=${LDFLAGS:-"-linkmode external -extldflags -static -s -w"}
 
 cd $(dirname $0)/..
+cd cmd/${BUILD_BIN}
 
 echo " Building ${VERSION} from ${COMMIT} on ${ARCH}"
 
