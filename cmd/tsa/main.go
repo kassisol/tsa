@@ -18,9 +18,7 @@
 package main
 
 import (
-	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-utils"
-	"github.com/juliengk/go-utils/user"
 	"github.com/kassisol/tsa/cli/command/commands"
 	"github.com/spf13/cobra"
 )
@@ -41,12 +39,6 @@ func newCommand() *cobra.Command {
 }
 
 func main() {
-	u := user.New()
-
-	if !u.IsRoot() {
-		log.Fatal("You must be root to run that command")
-	}
-
 	cmd := newCommand()
 	if err := cmd.Execute(); err != nil {
 		utils.Exit(err)
