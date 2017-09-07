@@ -2,5 +2,5 @@
 set -e
 
 $(dirname $0)/build-targets
-$(dirname $0)/build-packages
+#$(dirname $0)/build-packages
 $(dirname $0)/build-image
