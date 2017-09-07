@@ -7,4 +7,4 @@ if [ -d "build" ]; then
 fi
 mkdir -p build
 
-cp ${ROOTDIR}/bin/tsa build/
+cp ${ROOTDIR}/bin/tsad build/
