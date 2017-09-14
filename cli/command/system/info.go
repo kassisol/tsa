@@ -59,7 +59,6 @@ func runInfo(cmd *cobra.Command, args []string) {
 		fmt.Println(" Organization:", info.CA.Organization)
 		fmt.Println(" Organizational Unit:", info.CA.OrganizationalUnit)
 		fmt.Println(" Common Name:", info.CA.CommonName)
-		fmt.Println(" E-mail:", info.CA.Email)
 		fmt.Println("Certificates:", info.CertificateStats.Certificate)
 		fmt.Println(" Valid:", info.CertificateStats.Valid)
 		fmt.Println(" Expired:", info.CertificateStats.Expired)

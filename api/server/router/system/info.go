@@ -67,7 +67,6 @@ func InfoHandle(c echo.Context) error {
 			Organization:       s.GetConfig("ca_org")[0].Value,
 			OrganizationalUnit: s.GetConfig("ca_ou")[0].Value,
 			CommonName:         s.GetConfig("ca_cn")[0].Value,
-			Email:              s.GetConfig("ca_email")[0].Value,
 		}
 		info.CA = ca
 

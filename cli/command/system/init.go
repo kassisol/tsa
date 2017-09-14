@@ -18,7 +18,6 @@ var (
 	serverLocality string
 	serverOrg      string
 	serverOrgUnit  string
-	serverEmail    string
 )
 
 func NewInitCommand() *cobra.Command {
@@ -36,7 +35,6 @@ func NewInitCommand() *cobra.Command {
 	flags.StringVarP(&serverLocality, "city", "", "", "Locality")
 	flags.StringVarP(&serverOrg, "org", "", "", "Organization")
 	flags.StringVarP(&serverOrgUnit, "org-unit", "", "", "Organizational Unit")
-	flags.StringVarP(&serverEmail, "email", "", "", "E-mail")
 
 	return cmd
 }
@@ -49,7 +47,6 @@ func runInit(cmd *cobra.Command, args []string) {
 	var locality string
 	var o string
 	var ou string
-	var email string
 
 	if len(args) > 0 {
 		cmd.Usage()
@@ -100,18 +97,12 @@ func runInit(cmd *cobra.Command, args []string) {
 		ou = serverOrgUnit
 	}
 
-	if len(serverEmail) <= 0 {
-		email = readinput.ReadInput("Email")
-	} else {
-		email = serverEmail
-	}
-
 	clt, err := client.New(srv.Server.TSAURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err := clt.CAInit(srv.Token, catype, country, state, locality, o, ou, email, duration); err != nil {
+	if err := clt.CAInit(srv.Token, catype, country, state, locality, o, ou, duration); err != nil {
 		log.Fatal(err)
 	}
 

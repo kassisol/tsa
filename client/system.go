@@ -138,7 +138,7 @@ func (c *Config) AdminChangePassword(pold, pnew, pconfirm string) error {
 	return nil
 }
 
-func (c *Config) CAInit(token, ctype, country, state, locality, org, ou, email string, duration int) error {
+func (c *Config) CAInit(token, ctype, country, state, locality, org, ou string, duration int) error {
 	cc := &client.Config{
 		Scheme: c.URL.Scheme,
 		Host:   c.URL.Host,
@@ -162,7 +162,6 @@ func (c *Config) CAInit(token, ctype, country, state, locality, org, ou, email s
 		Locality:           locality,
 		Organization:       org,
 		OrganizationalUnit: ou,
-		Email:              email,
 	}
 
 	data, err := json.Marshal(ca)

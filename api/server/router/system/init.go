@@ -58,7 +58,6 @@ func CAInitHandle(c echo.Context) error {
 			s.RemoveConfig("ca_org", "ALL")
 			s.RemoveConfig("ca_ou", "ALL")
 			s.RemoveConfig("ca_cn", "ALL")
-			s.RemoveConfig("ca_email", "ALL")
 
 			err := fmt.Sprintf("%s", r)
 			res := jsonapi.NewErrorResponse(1000, err)
@@ -99,11 +98,6 @@ func CAInitHandle(c echo.Context) error {
 		panic(err)
 	}
 
-	// DV - E-mail
-	if err := validation.IsValidEmail(ci.Email); err != nil {
-		panic(err)
-	}
-
 	// Save datas to DB
 	caou := helpers.UpdateOrgUnitLabel(ci.OrganizationalUnit)
 	cacn := helpers.UpdateCommonNameLabel(ci.Type, ci.OrganizationalUnit)
@@ -116,16 +110,12 @@ func CAInitHandle(c echo.Context) error {
 	s.AddConfig("ca_org", ci.Organization)
 	s.AddConfig("ca_ou", caou)
 	s.AddConfig("ca_cn", cacn)
-	s.AddConfig("ca_email", ci.Email)
 
 	// Initialize CA
 	caSubject := pkix.NewSubject(ci.Country, ci.State, ci.Locality, ci.Organization, caou, cacn)
 
 	caNDN := pkix.NewDNSNames()
-
 	caNE := pkix.NewEmails()
-	caNE.AddEmail(ci.Email)
-
 	caIP := pkix.NewIPs()
 
 	caAltnames := pkix.NewSubjectAltNames(*caNDN, *caNE, *caIP)

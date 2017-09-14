@@ -43,7 +43,6 @@ type CertificationAuthority struct {
 	Organization       string `json:"organization"`
 	OrganizationalUnit string `json:"organizatinal_unit"`
 	CommonName         string `json:"common_name;omitempty"`
-	Email              string `json:"email"`
 }
 
 type CertificateStats struct {
