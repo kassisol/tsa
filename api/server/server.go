@@ -31,6 +31,7 @@ func API(addr string, tls bool) {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(mw.Https())
 	e.Use(mw.AdminPassword())
 	e.Use(mw.CAInit())
 
