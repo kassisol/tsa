@@ -19,6 +19,7 @@ import (
 	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/pkg/api"
+	"github.com/kassisol/tsa/pkg/host"
 	"github.com/kassisol/tsa/pkg/token"
 	"github.com/labstack/echo"
 )
@@ -140,7 +141,11 @@ func NewCertHandle(c echo.Context) error {
 		return api.JSON(c, http.StatusInternalServerError, r)
 	}
 
-	apiHost := s.GetConfig("api_fqdn")[0].Value
+	apiHost := host.New(c.Request().URL, c.Request().Host)
+	if s.CountConfigKey("api_fqdn") == 1 {
+		apiHost = s.GetConfig("api_fqdn")[0].Value
+	}
+
 	apiPort := s.GetConfig("api_port")[0].Value
 
 	CrlUrl := fmt.Sprintf("https://%s:%s/crl/CRL.crl", apiHost, apiPort)

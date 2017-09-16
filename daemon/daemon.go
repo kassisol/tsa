@@ -38,7 +38,7 @@ func serverInitConfig(appDir string) error {
 
 func runDaemon(cmd *cobra.Command, args []string) {
 	var bindPort int
-	var tlsCN string
+	var fqdn string
 
 	if len(args) > 0 {
 		cmd.Usage()
@@ -59,14 +59,12 @@ func runDaemon(cmd *cobra.Command, args []string) {
 		bindPort = 443
 	}
 
-	if len(serverTLSCN) <= 0 {
-		af, err := os.Hostname()
-		if err != nil {
-			log.Fatal(err)
-		}
-		tlsCN = af
-	} else {
-		tlsCN = serverTLSCN
+	if serverTLSGen && len(serverFQDN) == 0 {
+		log.Fatal("you must specified --fqdn if --tlsgen is enabled")
+	}
+
+	if len(serverFQDN) > 0 {
+		fqdn = serverFQDN
 	}
 
 	// Input validations
@@ -85,7 +83,7 @@ func runDaemon(cmd *cobra.Command, args []string) {
 
 	if serverTLSGen {
 		if !conf.CertificateExist() || (conf.CertificateExist() && conf.IsCertificateExpire()) {
-			if err := conf.CreateSelfSignedCertificate(tlsCN, serverTLSDuration); err != nil {
+			if err := conf.CreateSelfSignedCertificate(fqdn, serverTLSDuration); err != nil {
 				log.Fatal(err)
 			}
 		}
@@ -108,7 +106,10 @@ func runDaemon(cmd *cobra.Command, args []string) {
 	s.RemoveConfig("api_fqdn", "ALL")
 	s.AddConfig("api_bind", serverBindAddress)
 	s.AddConfig("api_port", strconv.Itoa(bindPort))
-	s.AddConfig("api_fqdn", tlsCN)
+
+	if len(serverFQDN) > 0 {
+		s.AddConfig("api_fqdn", fqdn)
+	}
 
 	addr := fmt.Sprintf("%s:%d", serverBindAddress, bindPort)
 

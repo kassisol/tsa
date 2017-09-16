@@ -9,8 +9,8 @@ import (
 var (
 	serverBindAddress string
 	serverBindPort    int
+	serverFQDN        string
 	serverTLS         bool
-	serverTLSCN       string
 	serverTLSDuration int
 	serverTLSGen      bool
 	serverTLSCert     string
@@ -33,8 +33,8 @@ func NewCommand() *cobra.Command {
 	flags := cmd.Flags()
 	flags.StringVarP(&serverBindAddress, "bind-address", "a", "0.0.0.0", "Bind Address")
 	flags.IntVarP(&serverBindPort, "bind-port", "p", 80, "Bind Port")
+	flags.StringVarP(&serverFQDN, "fqdn", "f", "", "API FQDN")
 	flags.BoolVarP(&serverTLS, "tls", "t", false, "Enable TLS certificates")
-	flags.StringVarP(&serverTLSCN, "tlscn", "", "", "Certificate Common Name")
 	flags.IntVarP(&serverTLSDuration, "tls-duration", "", 60, "Certificate duration")
 	flags.BoolVarP(&serverTLSGen, "tlsgen", "", false, "Auto generate self-signed TLS certificates")
 	flags.StringVarP(&serverTLSCert, "tlscert", "", cfg.API.CrtFile, "Path to TLS certificate file")

@@ -13,6 +13,7 @@ import (
 	"github.com/kassisol/tsa/api/storage"
 	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/pkg/api"
+	"github.com/kassisol/tsa/pkg/host"
 	"github.com/kassisol/tsa/version"
 	"github.com/labstack/echo"
 )
@@ -79,8 +80,13 @@ func InfoHandle(c echo.Context) error {
 		info.CertificateStats = stats
 	}
 
+	apiHost := host.New(c.Request().URL, c.Request().Host)
+	if s.CountConfigKey("api_fqdn") == 1 {
+		apiHost = s.GetConfig("api_fqdn")[0].Value
+	}
+
 	api2 := types.API{
-		FQDN:        s.GetConfig("api_fqdn")[0].Value,
+		FQDN:        apiHost,
 		BindAddress: s.GetConfig("api_bind")[0].Value,
 		BindPort:    s.GetConfig("api_port")[0].Value,
 	}
