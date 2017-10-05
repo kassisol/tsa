@@ -93,7 +93,26 @@ func CAInitHandle(c echo.Context) error {
 		}
 	}
 
+	// DV - State
+	if len(ci.State) == 0 {
+		panic("State cannot be empty")
+	}
+
+	// DV - Locality
+	if len(ci.Locality) == 0 {
+		panic("Locality cannot be empty")
+	}
+
+	// DV - Organization
+	if len(ci.Organization) == 0 {
+		panic("Organization cannot be empty")
+	}
+
 	// DV - Organizational Unit
+	if len(ci.OrganizationalUnit) == 0 {
+		panic("Organizational Unit cannot be empty")
+	}
+
 	if err := helpers.IsValidCAOrgUnit(ci.OrganizationalUnit); err != nil {
 		panic(err)
 	}
