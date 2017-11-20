@@ -5,12 +5,12 @@ import (
 )
 
 var (
-	NotValidCAType = fmt.Errorf("ca type is not valid")
+	ErrNotValidCAType = fmt.Errorf("ca type is not valid")
 )
 
 func IsValidCAType(catype string) error {
 	if catype != "root" {
-		return NotValidCAType
+		return ErrNotValidCAType
 	}
 
 	return nil
