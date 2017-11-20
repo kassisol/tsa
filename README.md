@@ -2,6 +2,8 @@
 
 HBM TSA is an application acting as a CA (Certification Authority) server to issue certificates for Docker Engine with TLS enabled.
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/kassisol/tsa)](https://goreportcard.com/report/github.com/kassisol/tsa)
+
 ## Getting Started & Documentation
 
 All documentation is available on the [Harbormaster website](http://harbormaster.io/docs/tsa/).
