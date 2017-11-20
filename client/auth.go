@@ -27,6 +27,9 @@ func (c *Config) AuthList(token string) ([]types.ServerConfig, error) {
 	req.HeaderAdd("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	result := req.Get()
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
@@ -82,6 +85,9 @@ func (c *Config) AuthCreate(token, key, value string) (*types.ServerConfig, erro
 	}
 
 	result := req.Post(bytes.NewBuffer(data))
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
@@ -132,6 +138,9 @@ func (c *Config) AuthDelete(token, key, value string) error {
 	req.ValueAdd("value", value)
 
 	result := req.Delete()
+	if result.Error != nil {
+		return result.Error
+	}
 
 	if result.Response.StatusCode > 204 {
 		var response jsonapi.Response
@@ -173,6 +182,9 @@ func (c *Config) AuthEnable(token, atype string) error {
 	}
 
 	result := req.Put(bytes.NewBuffer(data))
+	if result.Error != nil {
+		return result.Error
+	}
 
 	if result.Response.StatusCode > 204 {
 		var response jsonapi.Response
@@ -214,6 +226,9 @@ func (c *Config) AuthDisable(token string) error {
 	}
 
 	result := req.Put(bytes.NewBuffer(data))
+	if result.Error != nil {
+		return result.Error
+	}
 
 	if result.Response.StatusCode > 204 {
 		var response jsonapi.Response

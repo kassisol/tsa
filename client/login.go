@@ -28,6 +28,9 @@ func (c *Config) GetToken(username, password string, ttl int) (string, error) {
 	req.ValueAdd("ttl", strconv.Itoa(ttl))
 
 	result := req.Get()
+	if result.Error != nil {
+		return "", result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {

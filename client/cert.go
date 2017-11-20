@@ -30,6 +30,9 @@ func (c *Config) CertList(token string, filters map[string]string) ([]backend.Ce
 	}
 
 	result := req.Get()
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
@@ -74,6 +77,9 @@ func (c *Config) CertRevoke(token string, serialNumber int) error {
 	req.HeaderAdd("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	result := req.Delete()
+	if result.Error != nil {
+		return result.Error
+	}
 
 	if result.Response.StatusCode > 204 {
 		var response jsonapi.Response

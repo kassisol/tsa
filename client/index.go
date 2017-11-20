@@ -26,6 +26,9 @@ func (c *Config) GetDirectory() error {
 	req.HeaderAdd("Accept", "application/json")
 
 	result := req.Get()
+	if result.Error != nil {
+		return result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {

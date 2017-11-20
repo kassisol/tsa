@@ -27,6 +27,9 @@ func (c *Config) GetCACertificate() ([]byte, error) {
 	req.HeaderAdd("Accept", "application/json")
 
 	result := req.Get()
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
@@ -76,6 +79,9 @@ func (c *Config) GetCertificate(token string, certType string, csr []byte, durat
 	}
 
 	result := req.Post(bytes.NewBuffer(data))
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
@@ -119,6 +125,9 @@ func (c *Config) RevokeCertificate(token string, serialNumber int) error {
 	req.HeaderAdd("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	result := req.Post(bytes.NewBuffer(data))
+	if result.Error != nil {
+		return result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {

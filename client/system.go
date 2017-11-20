@@ -27,6 +27,9 @@ func (c *Config) GetServerVersion() (*version.VersionInfo, error) {
 	req.HeaderAdd("Accept", "application/json")
 
 	result := req.Get()
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
@@ -71,6 +74,9 @@ func (c *Config) GetInfo(token string) (*types.SystemInfo, error) {
 	req.HeaderAdd("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	result := req.Get()
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
@@ -125,6 +131,9 @@ func (c *Config) AdminChangePassword(pold, pnew, pconfirm string) error {
 	}
 
 	result := req.Put(bytes.NewBuffer(data))
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {
@@ -170,6 +179,9 @@ func (c *Config) CAInit(token, ctype, country, state, locality, org, ou string, 
 	}
 
 	result := req.Post(bytes.NewBuffer(data))
+	if result.Error != nil {
+		return result.Error
+	}
 
 	var response jsonapi.Response
 	if err := json.Unmarshal(result.Body, &response); err != nil {

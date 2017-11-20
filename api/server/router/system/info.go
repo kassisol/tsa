@@ -9,8 +9,8 @@ import (
 	"github.com/juliengk/go-cert/pkix"
 	"github.com/juliengk/stack/jsonapi"
 	apierr "github.com/kassisol/tsa/api/errors"
-	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/api/storage"
+	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/pkg/api"
 	"github.com/kassisol/tsa/pkg/host"
@@ -36,10 +36,10 @@ func InfoHandle(c echo.Context) error {
 	defer s.End()
 
 	info := types.SystemInfo{
-		ServerVersion:   version.Version,
-		StorageDriver:   "sqlite",
-		LoggingDriver:   "standard",
-		TSARootDir:      cfg.App.Dir.Root,
+		ServerVersion: version.Version,
+		StorageDriver: "sqlite",
+		LoggingDriver: "standard",
+		TSARootDir:    cfg.App.Dir.Root,
 	}
 
 	if len(s.ListConfigs("ca")) > 0 {

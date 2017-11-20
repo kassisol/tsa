@@ -6,8 +6,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-utils/validation"
 	"github.com/juliengk/stack/client"
-	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/cli/storage"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/spf13/cobra"
 )
 

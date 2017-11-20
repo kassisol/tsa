@@ -6,8 +6,8 @@ import (
 	"text/tabwriter"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/kassisol/tsa/cli/storage"
+	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/spf13/cobra"
 )
 

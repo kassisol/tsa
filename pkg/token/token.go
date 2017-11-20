@@ -55,9 +55,9 @@ func (c *Config) Create(audience, issuer string, admin bool, ttl int) (string, e
 
 func (c *Config) GetToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-//		if _, ok := token.Method.(*jwt.SigningMethodHS256); !ok {
-//			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-//		}
+		//		if _, ok := token.Method.(*jwt.SigningMethodHS256); !ok {
+		//			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		//		}
 
 		return c.JWK, nil
 	})
