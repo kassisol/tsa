@@ -21,9 +21,9 @@ ARG DAPPER_HOST_ARCH=amd64
 ARG HOST_ARCH=${DAPPER_HOST_ARCH}
 ARG ARCH=${HOST_ARCH}
 
-ARG DOCKER_VERSION=17.05.0-ce
+ARG DOCKER_VERSION=17.09.0
 
-ARG DOCKER_URL_amd64=https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz
+ARG DOCKER_URL_amd64=https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}-ce.tgz
 
 # Set up environment and export all ARGS as ENV
 ENV ARCH=${ARCH} \
