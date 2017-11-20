@@ -132,7 +132,7 @@ func (c *Config) AdminChangePassword(pold, pnew, pconfirm string) error {
 
 	result := req.Put(bytes.NewBuffer(data))
 	if result.Error != nil {
-		return nil, result.Error
+		return result.Error
 	}
 
 	var response jsonapi.Response
