@@ -41,7 +41,7 @@ type CertificationAuthority struct {
 	State              string `json:"state"`
 	Locality           string `json:"locality"`
 	Organization       string `json:"organization"`
-	OrganizationalUnit string `json:"organizatinal_unit"`
+	OrganizationalUnit string `json:"organizational_unit"`
 	CommonName         string `json:"common_name;omitempty"`
 }
 
