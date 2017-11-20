@@ -69,14 +69,14 @@ func (c *Config) Login(username, password string) (driver.LoginStatus, error) {
 
 	userMembers := entry.GetAttributeValues(s.GetConfig("auth_attr_members")[0].Value)
 
-	groups_admin := s.GetConfig("auth_group_admin")
-	groups_user := s.GetConfig("auth_group_user")
+	groupsAdmin := s.GetConfig("auth_group_admin")
+	groupsUser := s.GetConfig("auth_group_user")
 
-	if isMemberOf(userMembers, groups_admin) {
+	if isMemberOf(userMembers, groupsAdmin) {
 		return driver.Admin, nil
 	}
 
-	if isMemberOf(userMembers, groups_user) {
+	if isMemberOf(userMembers, groupsUser) {
 		return driver.User, nil
 	}
 
