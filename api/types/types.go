@@ -1,36 +1,52 @@
 package types
 
-type Directory struct {
-	CAInfo     string `json:"ca_info"`
-	NewApp     string `json:"new_app"`
-	NewAuthz   string `json:"new_authz"`
-	RevokeCert string `json:"revoke_cert"`
-}
-
-type NewCert struct {
-	Type     string `json:"type"`
-	CSR      []byte `json:"csr"`
-	Duration int    `json:"duration"`
-}
-
-type RevokeCert struct {
-	SerialNumber int `json:"serial_number"`
-}
+import (
+	"time"
+)
 
 type ServerConfig struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
+type API struct {
+	FQDN        string `json:"fqdn"`
+	BindAddress string `json:"bind_address"`
+	BindPort    string `json:"bind_port"`
+}
+
+type ChangePassword struct {
+	Old     string `json:"old"`
+	New     string `json:"new"`
+	Confirm string `json:"confirm"`
+}
+
+type Auth struct {
+	Type string `json:"type"`
+}
+
 type SystemInfo struct {
-	CA               CertificationAuthority `json:"certification_authority"`
-	CertificateStats CertificateStats       `json:"certificate_stats"`
-	API              API                    `json:"api"`
-	Auth             Auth                   `json:"auth"`
-	ServerVersion    string                 `json:"server_version"`
-	StorageDriver    string                 `json:"storage_driver"`
-	LoggingDriver    string                 `json:"logging_driver"`
-	TSARootDir       string                 `json:"tsa_root_dir"`
+	API           API    `json:"api"`
+	Auth          Auth   `json:"auth"`
+	ServerVersion string `json:"server_version"`
+	ID            string `json:"id"`
+	StorageDriver string `json:"storage_driver"`
+	LoggingDriver string `json:"logging_driver"`
+	TSARootDir    string `json:"tsa_root_dir"`
+}
+
+type Tenant struct {
+	ID         uint                   `json:"id,omitempty"`
+	CreatedAt  time.Time              `json:"created_at,omitempty"`
+	Name       string                 `json:"name"`
+	AuthGroups []Group                `json:"auth_groups"`
+	CA         CertificationAuthority `json:"ca"`
+}
+
+type Group struct {
+	ID        uint      `json:"id,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	Name      string    `json:"name"`
 }
 
 type CertificationAuthority struct {
@@ -45,6 +61,11 @@ type CertificationAuthority struct {
 	CommonName         string `json:"common_name;omitempty"`
 }
 
+type TenantGroup struct {
+	Tenant string `json:"tenant"`
+	Group  string `json:"group"`
+}
+
 type CertificateStats struct {
 	Certificate int `json:"certificate"`
 	Valid       int `json:"valid"`
@@ -52,18 +73,12 @@ type CertificateStats struct {
 	Revoked     int `json:"revoked"`
 }
 
-type API struct {
-	FQDN        string `json:"fqdn"`
-	BindAddress string `json:"bind_address"`
-	BindPort    string `json:"bind_port"`
+type NewCert struct {
+	Type     string `json:"type"`
+	CSR      []byte `json:"csr"`
+	Duration int    `json:"duration"`
 }
 
-type Auth struct {
-	Type string `json:"type"`
-}
-
-type ChangePassword struct {
-	Old     string `json:"old"`
-	New     string `json:"new"`
-	Confirm string `json:"confirm"`
+type RevokeCert struct {
+	SerialNumber int `json:"serial_number"`
 }

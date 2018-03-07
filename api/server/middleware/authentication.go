@@ -4,14 +4,13 @@ import (
 	log "github.com/Sirupsen/logrus"
 	pass "github.com/juliengk/go-utils/password"
 	"github.com/kassisol/tsa/api/auth"
-	"github.com/kassisol/tsa/api/auth/driver"
 	"github.com/kassisol/tsa/api/storage"
 	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/labstack/echo"
 )
 
-func Authorization(username, password string, c echo.Context) (bool, error) {
-	var loginStatus driver.LoginStatus
+func Authentication(username, password string, c echo.Context) (bool, error) {
+	var groups []string
 
 	cfg := adf.NewDaemon()
 	if err := cfg.Init(); err != nil {
@@ -25,21 +24,21 @@ func Authorization(username, password string, c echo.Context) (bool, error) {
 	defer s.End()
 
 	authType := s.GetConfig("auth_type")[0].Value
-	if authType == "none" {
-		log.Warning("No authentication configured")
+	a, err := auth.NewDriver(authType)
+	if err != nil {
+		log.Warning(err)
+
+		if username != "admin" {
+			return false, err
+		}
 	}
 
 	if username == "admin" {
 		if pass.ComparePassword([]byte(password), []byte(s.GetConfig("admin_password")[0].Value)) {
-			loginStatus = 1
+			groups = []string{"admin"}
 		}
 	} else {
-		a, err := auth.NewDriver(authType)
-		if err != nil {
-			log.Warning(err)
-		}
-
-		loginStatus, err = a.Login(username, password)
+		groups, err = a.Login(username, password)
 		if err != nil {
 			log.Warning(err)
 
@@ -47,17 +46,8 @@ func Authorization(username, password string, c echo.Context) (bool, error) {
 		}
 	}
 
-	if loginStatus > 0 {
-		c.Set("username", username)
+	c.Set("username", username)
+	c.Set("groups", groups)
 
-		admin := false
-		if loginStatus == 1 {
-			admin = true
-		}
-		c.Set("admin", admin)
-
-		return true, nil
-	}
-
-	return false, nil
+	return true, nil
 }

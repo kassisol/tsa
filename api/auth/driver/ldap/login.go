@@ -5,41 +5,23 @@ import (
 	"strconv"
 
 	"github.com/juliengk/go-ldapc"
-	"github.com/juliengk/go-utils"
-	"github.com/kassisol/tsa/api/auth/driver"
 	"github.com/kassisol/tsa/api/storage"
-	"github.com/kassisol/tsa/api/types"
 	"github.com/kassisol/tsa/pkg/adf"
 )
 
-func isMemberOf(userMembers []string, groups []types.ServerConfig) bool {
-	allowedGroups := []string{}
-	for _, group := range groups {
-		allowedGroups = append(allowedGroups, group.Value)
-	}
-
-	for _, group := range allowedGroups {
-		if utils.StringInSlice(group, userMembers, true) {
-			return true
-		}
-	}
-
-	return false
-}
-
-func (c *Config) Login(username, password string) (driver.LoginStatus, error) {
+func (c *Config) Login(username, password string) ([]string, error) {
 	if err := c.IsConfigOK(); err != nil {
-		return driver.Failed, err
+		return []string{}, err
 	}
 
 	cfg := adf.NewDaemon()
 	if err := cfg.Init(); err != nil {
-		return driver.Failed, err
+		return []string{}, err
 	}
 
 	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
 	if err != nil {
-		return driver.Failed, err
+		return []string{}, err
 	}
 	defer s.End()
 
@@ -64,21 +46,10 @@ func (c *Config) Login(username, password string) (driver.LoginStatus, error) {
 
 	entry, err := ldapclient.Authenticate(username, password)
 	if err != nil {
-		return driver.Failed, err
+		return []string{}, err
 	}
 
 	userMembers := entry.GetAttributeValues(s.GetConfig("auth_attr_members")[0].Value)
 
-	groupsAdmin := s.GetConfig("auth_group_admin")
-	groupsUser := s.GetConfig("auth_group_user")
-
-	if isMemberOf(userMembers, groupsAdmin) {
-		return driver.Admin, nil
-	}
-
-	if isMemberOf(userMembers, groupsUser) {
-		return driver.User, nil
-	}
-
-	return driver.None, nil
+	return userMembers, nil
 }

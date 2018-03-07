@@ -31,8 +31,6 @@ func NewConfigKeys() ConfigKeys {
 		"auth_search_base_user": Count{Min: 1, Max: 1},
 		"auth_search_filter":    Count{Min: 1, Max: 1},
 		"auth_attr_members":     Count{Min: 1, Max: 1},
-		"auth_group_admin":      Count{Min: 1, Max: 100},
-		"auth_group_user":       Count{Min: 1, Max: 100},
 	}
 }
 

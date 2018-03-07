@@ -1,4 +1,4 @@
-package cert
+package tenant
 
 import (
 	"os"
@@ -10,19 +10,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newRevokeCommand() *cobra.Command {
+func newDeleteCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "revoke [tenant ID] [serial number]",
-		Short: "Revoke certificate",
-		Long:  revokeDescription,
-		Run:   runRevoke,
+		Use:     "rm [tenant_id]",
+		Aliases: []string{"remove"},
+		Short:   "Remove tenant",
+		Long:    removeDescription,
+		Run:     runRemove,
 	}
 
 	return cmd
 }
 
-func runRevoke(cmd *cobra.Command, args []string) {
-	if len(args) < 2 || len(args) > 2 {
+func runRemove(cmd *cobra.Command, args []string) {
+	if len(args) < 1 || len(args) > 1 {
 		cmd.Usage()
 		os.Exit(-1)
 	}
@@ -43,22 +44,17 @@ func runRevoke(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	tenantID, err := strconv.Atoi(args[0])
+	tid, err := strconv.Atoi(args[0])
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	serialNumber, err := strconv.Atoi(args[1])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := clt.CertRevoke(srv.Token, tenantID, serialNumber); err != nil {
+	if err := clt.TenantDelete(srv.Token, tid); err != nil {
 		log.Fatal(err)
 	}
 }
 
-var revokeDescription = `
-Revoke certificate
+var removeDescription = `
+Remove tenant
 
 `

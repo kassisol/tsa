@@ -3,6 +3,7 @@ package cert
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"text/tabwriter"
 
 	log "github.com/Sirupsen/logrus"
@@ -16,7 +17,7 @@ var certListFilter []string
 
 func newListCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "ls",
+		Use:     "ls [tenant_id]",
 		Aliases: []string{"list"},
 		Short:   "List certificates issued",
 		Long:    listDescription,
@@ -46,6 +47,11 @@ func runList(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
+	tenantID, err := strconv.Atoi(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	clt, err := client.New(srv.Server.TSAURL)
 	if err != nil {
 		log.Fatal(err)
@@ -53,7 +59,7 @@ func runList(cmd *cobra.Command, args []string) {
 
 	filters := utils.ConvertSliceToMap("=", certListFilter)
 
-	certificates, err := clt.CertList(srv.Token, filters)
+	certificates, err := clt.CertList(srv.Token, tenantID, filters)
 	if err != nil {
 		log.Fatal(err)
 	}

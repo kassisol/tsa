@@ -30,7 +30,7 @@ func New(config string) (driver.Storager, error) {
 
 	db.LogMode(debug)
 
-	db.AutoMigrate(&ServerConfig{})
+	db.AutoMigrate(&ServerConfig{}, &Tenant{}, &Group{}, &CertificationAuthority{})
 
 	return &Config{DB: db}, nil
 }

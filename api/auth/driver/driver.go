@@ -12,5 +12,5 @@ const (
 type Auther interface {
 	AddConfig(key, value string) error
 
-	Login(username, password string) (LoginStatus, error)
+	Login(username, password string) ([]string, error)
 }

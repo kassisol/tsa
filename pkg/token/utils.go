@@ -8,7 +8,7 @@ import (
 
 var defaultLetterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_-+="
 
-func GenerateJWK(letterBytes string, length int) string {
+func Generate(letterBytes string, length int) string {
 	lb := letterBytes
 	if len(letterBytes) == 0 {
 		lb = defaultLetterBytes

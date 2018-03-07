@@ -3,10 +3,9 @@ package server
 import (
 	log "github.com/Sirupsen/logrus"
 	mw "github.com/kassisol/tsa/api/server/middleware"
-	"github.com/kassisol/tsa/api/server/router/acme"
-	"github.com/kassisol/tsa/api/server/router/ca"
-	"github.com/kassisol/tsa/api/server/router/crl"
+	"github.com/kassisol/tsa/api/server/router/cert"
 	"github.com/kassisol/tsa/api/server/router/system"
+	"github.com/kassisol/tsa/api/server/router/tenant"
 	"github.com/kassisol/tsa/api/storage"
 	"github.com/kassisol/tsa/pkg/adf"
 	"github.com/labstack/echo"
@@ -33,17 +32,16 @@ func API(addr string, tls bool) {
 	e.Use(middleware.Recover())
 	e.Use(mw.Https())
 	e.Use(mw.AdminPassword())
-	e.Use(mw.CAInit())
 
-	// Directory
+	// Index
 	e.GET("/", system.IndexHandle)
-
-	// Authz
-	h := middleware.BasicAuth(mw.Authorization)(system.AuthzHandle)
-	e.GET("/new-authz", h)
 
 	// Version
 	e.GET("/version", system.ServerVersionHandle)
+
+	// Login
+	h := middleware.BasicAuth(mw.Authentication)(system.LoginHandle)
+	e.GET("/login", h)
 
 	// System
 	jwtConfig := middleware.JWTConfig{
@@ -53,11 +51,10 @@ func API(addr string, tls bool) {
 
 	sys := e.Group("/system")
 	sys.Use(middleware.JWTWithConfig(jwtConfig))
-	sys.Use(mw.AdminOnly())
+	sys.Use(mw.Authz("admin"))
 
 	sys.GET("/info", system.InfoHandle)
 	sys.PUT("/admin/password", system.AdminChangePasswordHandle)
-	sys.POST("/ca/init", system.CAInitHandle)
 
 	sys.GET("/auth", system.AuthListHandle)
 	sys.POST("/auth", system.AuthCreateHandle)
@@ -65,24 +62,26 @@ func API(addr string, tls bool) {
 	sys.PUT("/auth/enable/:type", system.AuthEnableHandle)
 	sys.PUT("/auth/disable", system.AuthDisableHandle)
 
-	sys.GET("/cert", system.CertListHandle)
-	sys.DELETE("/cert/revoke/:serialnumber", system.CertRevokeHandle)
+	// Tenant
+	tnt := e.Group("/tenant")
+
+	tnt.GET("/", tenant.ListHandle, middleware.JWTWithConfig(jwtConfig), mw.Authz("authenticated"))
+	tnt.POST("/", tenant.CreateHandle, middleware.JWTWithConfig(jwtConfig), mw.Authz("admin"))
+	tnt.DELETE("/:id", tenant.DeleteHandle, middleware.JWTWithConfig(jwtConfig), mw.Authz("admin"))
+
+	tnt.GET("/:id/group", tenant.GroupListHandle, middleware.JWTWithConfig(jwtConfig), mw.Authz("admin"))
+	tnt.POST("/:id/group", tenant.GroupAddHandle, middleware.JWTWithConfig(jwtConfig), mw.Authz("admin"))
+	tnt.DELETE("/:id/group/:gid", tenant.GroupDeleteHandle, middleware.JWTWithConfig(jwtConfig), mw.Authz("admin"))
 
 	// CA public certificate
-	e.GET("/ca", ca.PubCertHandle)
+	tnt.GET("/:id/ca", cert.CAPubHandle, mw.Authz("anonymous"))
 
 	// Revocation file
-	e.GET("/crl/CRL.crl", crl.CRLHandle)
+	tnt.GET("/:id/crl/CRL.crl", cert.CRLHandle, mw.Authz("anonymous"))
 
-	// ACME
-	r := e.Group("/acme")
-	r.Use(middleware.JWT(jwk))
-
-	// New certificate
-	r.POST("/new-app", acme.NewCertHandle)
-
-	// Revoke
-	r.POST("/revoke-cert", acme.RevokeCertHandle)
+	tnt.GET("/:id/cert", cert.ListHandle, middleware.JWTWithConfig(jwtConfig), mw.Authz("user"))
+	tnt.POST("/:id/cert", cert.SignHandle, middleware.JWTWithConfig(jwtConfig), mw.Authz("user"))
+	tnt.POST("/:id/cert/revoke", cert.RevokeHandle, middleware.JWTWithConfig(jwtConfig), mw.Authz("user"))
 
 	if tls {
 		log.Fatal(e.StartTLS(addr, cfg.API.CrtFile, cfg.API.KeyFile))

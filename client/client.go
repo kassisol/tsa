@@ -2,12 +2,10 @@ package client
 
 import (
 	"github.com/juliengk/stack/client"
-	"github.com/kassisol/tsa/api/types"
 )
 
 type Config struct {
-	URL       *client.URL
-	Directory types.Directory
+	URL *client.URL
 }
 
 func New(url string) (*Config, error) {

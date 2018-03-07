@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"strings"
 )
 
@@ -30,7 +31,7 @@ func ConvertSliceToMap(sep string, slice []string) map[string]string {
 
 	if len(slice) > 0 {
 		for _, s := range slice {
-			if ! strings.Contains(s, sep) {
+			if !strings.Contains(s, sep) {
 				continue
 			}
 
@@ -64,4 +65,29 @@ func Exit(err error) {
 	fmt.Println(err)
 
 	os.Exit(1)
+}
+
+func RemoveLastChar(s string) string {
+	strLen := len(s) - 1
+	newStr := s
+	if strLen > 0 {
+		newStr = s[0:strLen]
+	}
+
+	return newStr
+}
+
+func GetReflectValue(k reflect.Kind, i interface{}) reflect.Value {
+	val := reflect.ValueOf(i)
+
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+
+	if val.Kind() != k {
+		fmt.Printf("%v type can't have attributes inspected\n", val.Kind())
+		return reflect.Value{}
+	}
+
+	return val
 }

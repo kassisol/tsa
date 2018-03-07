@@ -79,10 +79,10 @@
 			"revisionTime": "2017-08-24T08:00:34Z"
 		},
 		{
-			"checksumSHA1": "oPS5VKqekhBCX1bS2hp9cO/EEmo=",
+			"checksumSHA1": "JugSCvsogiOCbaWPy2bcpZs/Fw4=",
 			"path": "github.com/juliengk/go-cert/errors",
-			"revision": "a9c8ef76eae7d11ffb49cfa9917e4bd97847b92a",
-			"revisionTime": "2017-08-24T08:00:34Z"
+			"revision": "781fb30cc8dc9a474d51b8d3331139b0cd70583f",
+			"revisionTime": "2018-03-06T18:38:47Z"
 		},
 		{
 			"checksumSHA1": "atviTD1ofXB9tg+QCweIE59pE7k=",
@@ -103,10 +103,10 @@
 			"revisionTime": "2017-01-31T15:23:06Z"
 		},
 		{
-			"checksumSHA1": "iKxXqCmEK8bzdsb6+HcbbHTK+sY=",
+			"checksumSHA1": "A8BsAO7UTh29anYIVPv0DobRcbg=",
 			"path": "github.com/juliengk/go-utils",
-			"revision": "ea868d6f9306e100d6c43749f3a7dfd2cf823ea0",
-			"revisionTime": "2017-02-03T15:06:23Z"
+			"revision": "db0e8378220cf834ff409fb64d5a65a536f4f3e3",
+			"revisionTime": "2018-03-06T18:36:54Z"
 		},
 		{
 			"checksumSHA1": "blC8BiiPdg4xYMXS6iOE7G7ueqI=",
@@ -115,22 +115,22 @@
 			"revisionTime": "2017-03-23T14:49:40Z"
 		},
 		{
-			"checksumSHA1": "qt4iptV5cFKUkM/+I94ieme7AIM=",
+			"checksumSHA1": "bEDN0x4L1+GH65AcSLCLq0D+x7o=",
 			"path": "github.com/juliengk/go-utils/ip",
-			"revision": "066bd06ec6dcd9f773993273f04463d7ac2774e6",
-			"revisionTime": "2017-03-17T14:03:18Z"
+			"revision": "db0e8378220cf834ff409fb64d5a65a536f4f3e3",
+			"revisionTime": "2018-03-06T18:36:54Z"
 		},
 		{
-			"checksumSHA1": "pSxg49xc7RUFlCz9REImGUPT+Sc=",
+			"checksumSHA1": "Bsl2SqyFaNrZpAEaehL/YIjEPIU=",
 			"path": "github.com/juliengk/go-utils/password",
-			"revision": "fdfeab14609bbb4ff6ed82e003755060a7ce9da2",
-			"revisionTime": "2017-05-19T18:36:51Z"
+			"revision": "db0e8378220cf834ff409fb64d5a65a536f4f3e3",
+			"revisionTime": "2018-03-06T18:36:54Z"
 		},
 		{
-			"checksumSHA1": "Tn9gcPRVOucI0hb+/ykreDHamb8=",
+			"checksumSHA1": "sffkrGXJiDDqC+/2BxsNPKJDTGs=",
 			"path": "github.com/juliengk/go-utils/random",
-			"revision": "ea868d6f9306e100d6c43749f3a7dfd2cf823ea0",
-			"revisionTime": "2017-02-03T15:06:23Z"
+			"revision": "db0e8378220cf834ff409fb64d5a65a536f4f3e3",
+			"revisionTime": "2018-03-06T18:36:54Z"
 		},
 		{
 			"checksumSHA1": "rXD8AI+eK7Fnhd7SiOchOcEu5Zc=",

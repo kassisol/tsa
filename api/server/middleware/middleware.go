@@ -13,17 +13,17 @@ func generateEndpointsSlice(key string, restricted bool) []string {
 		"all_restricted",
 	}
 	skipEndpoints := map[string][]string{
-		"all": []string{
+		"all": {
 			"/",
 			"/new-authz",
 			"/system/admin/password",
 		},
-		"all_restricted": []string{
+		"all_restricted": {
 			"/system/info",
 		},
 		//"admin_password": []string{
 		//},
-		"ca_init": []string{
+		"ca_init": {
 			"/system/ca/init",
 		},
 	}

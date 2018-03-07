@@ -44,6 +44,6 @@ func NewCommand() *cobra.Command {
 }
 
 var daemonDescription = `
-Starts a CA (Certificate Authority) server
+Starts a CA (Certification Authority) server
 
 `

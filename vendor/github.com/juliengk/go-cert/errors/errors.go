@@ -36,9 +36,9 @@ const (
 // Parsing errors
 const (
 	Unknown      errors.Reason = iota // X000
-	ReadFailed                 // X001
-	DecodeFailed               // X002
-	ParseFailed                // X003
+	ReadFailed                        // X001
+	DecodeFailed                      // X002
+	ParseFailed                       // X003
 )
 
 // The following represent certificate non-parsing errors, and must be
@@ -98,7 +98,7 @@ const (
 // specified with SerialError
 const (
 	IncrementFailed errors.Reason = 100 * (iota + 1) // 61XX
-	WriteFailed                // X003
+	WriteFailed                                      // X003
 )
 
 // The following are OCSP related errors, and should be

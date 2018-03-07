@@ -5,8 +5,9 @@ type App struct {
 }
 
 type AppDir struct {
-	Root  string
-	Certs string
+	Root    string
+	Tenants string
+	Certs   string
 }
 
 type TLSOptions struct {

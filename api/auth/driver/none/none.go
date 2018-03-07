@@ -1,6 +1,8 @@
 package none
 
 import (
+	"fmt"
+
 	"github.com/kassisol/tsa/api/auth"
 	"github.com/kassisol/tsa/api/auth/driver"
 )
@@ -12,5 +14,5 @@ func init() {
 type Config struct{}
 
 func New() (driver.Auther, error) {
-	return &Config{}, nil
+	return &Config{}, fmt.Errorf("No authentication configured")
 }

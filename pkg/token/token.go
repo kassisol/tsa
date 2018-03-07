@@ -12,7 +12,7 @@ type Config struct {
 }
 
 type MyCustomClaims struct {
-	Admin bool `json:"admin"`
+	Groups []string `json:"groups"`
 	jwt.StandardClaims
 }
 
@@ -23,19 +23,16 @@ func New(jwk []byte, valid bool) *Config {
 	}
 }
 
-func (c *Config) Create(audience, issuer string, admin bool, ttl int) (string, error) {
+func (c *Config) Create(audience, issuer string, groups []string, ttl int) (string, error) {
 	now := time.Now()
 
-	expireMinutes := 5
-	if admin {
-		expireMinutes = 1440
-		if ttl > 0 {
-			expireMinutes = ttl
-		}
+	expireMinutes := 15
+	if ttl > 0 {
+		expireMinutes = ttl
 	}
 
 	claims := MyCustomClaims{
-		admin,
+		groups,
 		jwt.StandardClaims{
 			Audience:  audience,
 			ExpiresAt: now.Add(time.Minute * time.Duration(expireMinutes)).Unix(),
@@ -114,9 +111,9 @@ func (c *Config) GetCustomClaims(tokenString string) (MyCustomClaims, error) {
 
 	claims := token.Claims.(jwt.MapClaims)
 
-	admin := false
-	if v, ok := claims["admin"]; ok {
-		admin = v.(bool)
+	groups := []string{}
+	if v, ok := claims["groups"]; ok {
+		groups = v.([]string)
 	}
 
 	stdclaims, err := c.GetStandardClaims(tokenString)
@@ -124,7 +121,19 @@ func (c *Config) GetCustomClaims(tokenString string) (MyCustomClaims, error) {
 		return MyCustomClaims{}, err
 	}
 
-	mcc := MyCustomClaims{admin, stdclaims}
+	mcc := MyCustomClaims{groups, stdclaims}
 
 	return mcc, nil
+}
+
+func (c *Config) IsExpired(tokenString string) bool {
+	claims, _ := c.GetCustomClaims(tokenString)
+
+	now := time.Now()
+
+	if claims.ExpiresAt <= now.Unix() {
+		return false
+	}
+
+	return true
 }

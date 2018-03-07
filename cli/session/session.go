@@ -72,12 +72,6 @@ func (c *Config) Create(server, username, password string, ttl int) error {
 		return err
 	}
 
-	// Get TSA URL directories
-	err = clt.GetDirectory()
-	if err != nil {
-		return err
-	}
-
 	// Authz
 	token, err := clt.GetToken(username, password, ttl)
 	if err != nil {

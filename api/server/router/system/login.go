@@ -12,12 +12,21 @@ import (
 	"github.com/labstack/echo"
 )
 
-func AuthzHandle(c echo.Context) error {
+func LoginHandle(c echo.Context) error {
+	var ttlTemp string
+
 	username := c.Get("username").(string)
-	admin := c.Get("admin").(bool)
+	groups := c.Get("groups").([]string)
 
 	qTtl := c.QueryParam("ttl")
-	ttl, err := strconv.Atoi(qTtl)
+
+	if len(qTtl) == 0 {
+		ttlTemp = "1440"
+	} else {
+		ttlTemp = qTtl
+	}
+
+	ttl, err := strconv.Atoi(ttlTemp)
 	if err != nil {
 		r := jsonapi.NewErrorResponse(1000, err.Error())
 
@@ -35,7 +44,7 @@ func AuthzHandle(c echo.Context) error {
 
 	t := token.New(jwk, true)
 
-	ss, err := t.Create(username, "harbormaster", admin, ttl)
+	ss, err := t.Create(username, "harbormaster", groups, ttl)
 	if err != nil {
 		e := errors.New(errors.DatabaseError, errors.ReadFailed)
 		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)

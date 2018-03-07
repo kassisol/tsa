@@ -8,7 +8,7 @@ func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "access",
 		Short: "Manage session to TSA servers",
-		Long:  serverDescription,
+		Long:  accessDescription,
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Usage()
 		},
@@ -26,7 +26,7 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-var serverDescription = `
+var accessDescription = `
 The **tsa access** command has subcommands for managing session to TSA servers.
 
 To see help for a subcommand, use:

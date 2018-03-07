@@ -1,10 +1,11 @@
-package acme
+package cert
 
 import (
 	"crypto/md5"
 	"fmt"
 	"net/http"
 	"path"
+	"strconv"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/juliengk/go-cert/ca"
@@ -24,10 +25,40 @@ import (
 	"github.com/labstack/echo"
 )
 
-func NewCertHandle(c echo.Context) error {
+func SignHandle(c echo.Context) error {
 	cfg := adf.NewDaemon()
 	if err := cfg.Init(); err != nil {
 		return err
+	}
+
+	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
+	if err != nil {
+		e := errors.New(apierr.DatabaseError, errors.ReadFailed)
+		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
+
+		return api.JSON(c, http.StatusInternalServerError, r)
+	}
+	defer s.End()
+
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	filters := map[string]string{
+		"id": c.Param("id"),
+	}
+	tenants := s.ListTenants(filters)
+
+	if len(tenants) == 0 {
+		r := jsonapi.NewErrorResponse(1000, fmt.Sprintf("No Tenant with ID %d", id))
+
+		return api.JSON(c, http.StatusInternalServerError, r)
+	}
+
+	tenant := tenants[0]
+
+	if err := cfg.Tenant(tenant.Name); err != nil {
+		r := jsonapi.NewErrorResponse(1000, err.Error())
+
+		return api.JSON(c, http.StatusInternalServerError, r)
 	}
 
 	db, err := database.NewBackend("sqlite", cfg.CA.Dir.Root)
@@ -38,15 +69,6 @@ func NewCertHandle(c echo.Context) error {
 		return api.JSON(c, http.StatusInternalServerError, r)
 	}
 	defer db.End()
-
-	s, err := storage.NewDriver("sqlite", cfg.App.Dir.Root)
-	if err != nil {
-		e := errors.New(apierr.DatabaseError, errors.ReadFailed)
-		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
-
-		return api.JSON(c, http.StatusInternalServerError, r)
-	}
-	defer s.End()
 
 	// Get JWT Claims
 	authHeader := c.Request().Header.Get("Authorization")
@@ -90,11 +112,13 @@ func NewCertHandle(c echo.Context) error {
 
 	// Validate Common Name for engine
 	if newcert.Type == "engine" {
-		if !claims.Admin {
-			r := jsonapi.NewErrorResponse(12000, "Only members of Admin group can request certificate of type engine")
+		/*
+			if !claims.Admin {
+				r := jsonapi.NewErrorResponse(12000, "Only members of Admin group can request certificate of type engine")
 
-			return api.JSON(c, http.StatusBadRequest, r)
-		}
+				return api.JSON(c, http.StatusBadRequest, r)
+			}
+		*/
 
 		if claims.Audience == csr.CR.Subject.CommonName {
 			r := jsonapi.NewErrorResponse(12000, "Cannot set CN to username for certificate of type engine")
@@ -148,7 +172,7 @@ func NewCertHandle(c echo.Context) error {
 
 	apiPort := s.GetConfig("api_port")[0].Value
 
-	CrlUrl := fmt.Sprintf("https://%s:%s/crl/CRL.crl", apiHost, apiPort)
+	CrlUrl := fmt.Sprintf("https://%s:%s/tenant/%d/crl/CRL.crl", id, apiHost, apiPort)
 
 	template, err := ca.CreateTemplate(false, caSubject, caSubjectAltNames, caDate, caSN, CrlUrl)
 	if err != nil {

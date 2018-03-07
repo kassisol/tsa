@@ -15,7 +15,7 @@ func (c *Config) GetToken(username, password string, ttl int) (string, error) {
 		Scheme: c.URL.Scheme,
 		Host:   c.URL.Host,
 		Port:   c.URL.Port,
-		Path:   c.Directory.NewAuthz,
+		Path:   "/login",
 	}
 
 	req, err := client.New(cc)
