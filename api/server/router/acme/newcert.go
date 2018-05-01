@@ -81,11 +81,27 @@ func NewCertHandle(c echo.Context) error {
 	}
 
 	// Validate Common Name for client
-	if newcert.Type == "client" && claims.Audience != csr.CR.Subject.CommonName {
-		e := errors.New(errors.CertStoreError, errors.RecordFound)
-		r := jsonapi.NewErrorResponse(e.ErrorCode, e.Message)
+	if newcert.Type == "client" {
+		if !claims.Admin {
+			if claims.Audience != csr.CR.Subject.CommonName {
+				r := jsonapi.NewErrorResponse(12000, fmt.Sprintf("user '%s' and certificate CN '%s' do not match", claims.Audience, csr.CR.Subject.CommonName))
 
-		return api.JSON(c, http.StatusBadRequest, r)
+				return api.JSON(c, http.StatusBadRequest, r)
+			}
+		}
+
+		if csr.CR.Subject.CommonName == "admin" {
+			r := jsonapi.NewErrorResponse(12000, "user 'admin' is not allowed to create client certificate")
+
+			return api.JSON(c, http.StatusBadRequest, r)
+		}
+
+		// if type is client, CN should not be a FQDN
+		if err = validation.IsValidFQDN(csr.CR.Subject.CommonName); err != nil {
+			r := jsonapi.NewErrorResponse(12000, "Cannot use FQDN for client CN")
+
+			return api.JSON(c, http.StatusBadRequest, r)
+		}
 	}
 
 	// Validate Common Name for engine
