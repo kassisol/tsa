@@ -15,10 +15,17 @@ menu:
 Refer to the [page](../installation/index.md) specific to your Linux distribution.
 
 ## Start server
+### Standalone
 
 ```bash
 # tsad --tls --tlsgen --fqdn tsa1.example.com
 ⇛ https server started on [::]:443
+```
+
+### Container based
+
+```bash
+$ docker container run -d --mount "type=bind,source=/path/to/host,target=/var/lib/tsa" -p 443:443 kassisol/tsa:x.x.x --tls --tlsgen --fqdn tsa1.example.com
 ```
 
 ## Configure
@@ -32,7 +39,7 @@ $ tsa server add tsa1 https://tsa1.example.com
 
 #### Change the default password
 
-Default admin password is ”admin”
+Default admin password is "admin"
 
 ```bash
 $ tsa passwd tsa1

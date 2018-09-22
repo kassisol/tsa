@@ -13,22 +13,23 @@ github_edit: "https://github.com/kassisol/tsa/edit/master/docs/install/binary.md
 toc: true
 ---
 
-## Get the TSA binary
+TSA is composed of 2 binaries, the daemon and the client.
 
-You can download a specific version. To get the list of stable
-release version numbers from GitHub, view the `harbormaster/tsa`
+* `tsad`
+* `tsa`
+
+## Get the TSA binaries
+
+To get the list of stable release version numbers from GitHub, view the `kassisol/tsa`
 [releases page](https://github.com/kassisol/tsa/releases).
-
-
-### Get the Linux binary
 
 To download a specific release version, use the following
 URL patterns:
 
 ```
+https://github.com/kassisol/tsa/releases/download/x.x.x/tsad
 https://github.com/kassisol/tsa/releases/download/x.x.x/tsa
 ```
-
 
 #### Install the Linux binary
 
@@ -36,7 +37,8 @@ After downloading, TSA requires this binary to be installed in your host's `$PAT
 For example, to install the binaries in `/usr/local/sbin`:
 
 ```bash
-$ mv tsa /usr/local/sbin/
+# mv tsad /usr/local/sbin/
+# mv tsa /usr/local/bin/
 ```
 
 > If you already have TSA installed on your host, make sure you
@@ -44,22 +46,6 @@ $ mv tsa /usr/local/sbin/
 > in the same location. You can find the location of the current installation
 > with `dirname $(which tsa)`.
 
-
-#### Run the TSA daemon on Linux
-
-You can manually start the TSA server using:
-
-```bash
-# tsa server &
-```
-
-The GitHub repository provides sample of systemd service unit file you can use to control
-the daemon through a process manager, such as systemd. You can find
-this script in the [contrib directory](https://github.com/kassisol/tsa/tree/master/contrib/init/systemd).
-
-For additional information about running the TSA in server mode, refer to
-the [server command](../reference/commandline/server.md) in the TSA command
-line reference.
 
 ## Upgrade TSA
 

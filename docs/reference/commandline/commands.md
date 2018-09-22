@@ -14,7 +14,14 @@ toc: true
 This section contains reference information on using TSA's command line
 client. Each command has a reference page along with samples.
 
-### TSA management commands
+## TSAD
+
+| Command | Description                                                                |
+|:--------|:---------------------------------------------------------------------------|
+| [tsad](tsad.md) | Display information about TSA daemon                               |
+
+## TSA
+### Mananagement commands
 
 | Command | Description                                                                |
 |:--------|:---------------------------------------------------------------------------|
