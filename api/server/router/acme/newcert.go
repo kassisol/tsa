@@ -96,9 +96,9 @@ func NewCertHandle(c echo.Context) error {
 			return api.JSON(c, http.StatusBadRequest, r)
 		}
 
-		// if type is client, CN should not be a FQDN
-		if err = validation.IsValidFQDN(csr.CR.Subject.CommonName); err != nil {
-			r := jsonapi.NewErrorResponse(12000, "Cannot use FQDN for client CN")
+		// if type is client, CN should be valid name
+		if err = validation.IsValidName(csr.CR.Subject.CommonName); err != nil {
+			r := jsonapi.NewErrorResponse(12000, "username is not valid")
 
 			return api.JSON(c, http.StatusBadRequest, r)
 		}
