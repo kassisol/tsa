@@ -1,4 +1,4 @@
-TARGETS := $(shell ls scripts | grep -vE 'build-dev|clean|dev|help|release')
+TARGETS := $(shell ls scripts | grep -vE 'build-dev|clean|dev|help|release|tag')
 
 TMUX := $(shell command -v tmux 2> /dev/null)
 
@@ -46,6 +46,9 @@ help:
 release: .github-release
 	./scripts/release
 
+tag:
+	./scripts/tag
+
 .DEFAULT_GOAL := ci
 
-.PHONY: .dapper .github-release .tmass $(TARGETS) build-dev clean dev help release
+.PHONY: .dapper .github-release .tmass $(TARGETS) build-dev clean dev help release tag
