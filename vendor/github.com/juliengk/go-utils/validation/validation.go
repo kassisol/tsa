@@ -46,6 +46,10 @@ func IsValidFQDN(s string) error {
 
 	parts := strings.Split(s, ".")
 
+	if len(parts) < 2 {
+		return NotValidFQDN
+	}
+
 	for i, p := range parts {
 		rePart := regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9\-]{1,63}$`)
 
@@ -100,7 +104,7 @@ func IsValidName(name string) error {
 }
 
 func IsValidPort(port int) error {
-	if port < 0 && port > 65535 {
+	if port < 0 || port > 65535 {
 		return NotValidPort
 	}
 
